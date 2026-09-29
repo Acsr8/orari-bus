@@ -226,6 +226,8 @@
 
     <label>Fermata</label>
     <select id="stopSelect"></select>
+    <button id="geoBtn" type="button" style="margin-top:10px;width:100%;padding:12px 10px;border-radius:10px;border:1.5px solid var(--blue);background:#eef2ff;color:var(--blue-dark);font-weight:700;font-size:0.9rem;">📍 Trova fermata più vicina</button>
+    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
 
     <label>Tipo di giorno</label>
     <select id="dayTypeSelect">
@@ -256,6 +258,7 @@
 
 <script>
 let DATA = null;
+let COORDS = null;
 let state = {
   linea: "E037",
   direzione: "andata",
@@ -285,6 +288,33 @@ function guessDefaultDayType(){
   if (d === 0) return "festivo";
   if (d === 6) return "fsc_sabato";
   return "fsc_feriale";
+}
+
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function findNearestStop(userLat, userLon){
+  let best = null;
+  Object.keys(DATA.linee).forEach(lineaKey => {
+    const linea = DATA.linee[lineaKey];
+    Object.keys(linea.direzioni).forEach(dirKey => {
+      const dir = linea.direzioni[dirKey];
+      dir.fermate.forEach((stopName, idx) => {
+        const coord = COORDS[stopName];
+        if (!coord) return;
+        const dist = haversine(userLat, userLon, coord[0], coord[1]);
+        if (!best || dist < best.dist){
+          best = { dist, linea: lineaKey, direzione: dirKey, fermata: idx, stopName };
+        }
+      });
+    });
+  });
+  return best;
 }
 
 function timeToMinutes(t){
@@ -417,14 +447,56 @@ document.getElementById("dayTypeSelect").addEventListener("change", (e) => {
   renderResults();
 });
 
+document.getElementById("geoBtn").addEventListener("click", () => {
+  const statusEl = document.getElementById("geoStatus");
+  if (!navigator.geolocation) {
+    statusEl.textContent = "Geolocalizzazione non supportata da questo browser.";
+    return;
+  }
+  if (!DATA || !COORDS) {
+    statusEl.textContent = "Dati non ancora caricati, riprova tra un istante.";
+    return;
+  }
+  statusEl.textContent = "📡 Ricerca posizione in corso...";
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const best = findNearestStop(latitude, longitude);
+      if (!best) {
+        statusEl.textContent = "Nessuna fermata trovata.";
+        return;
+      }
+      state.linea = best.linea;
+      state.direzione = best.direzione;
+      state.fermata = best.fermata;
+      render();
+      const distText = best.dist < 1
+        ? Math.round(best.dist * 1000) + " m"
+        : best.dist.toFixed(1) + " km";
+      statusEl.textContent = "✅ Fermata più vicina: " + best.stopName + " (~" + distText + ")";
+    },
+    (err) => {
+      let msg = "Impossibile ottenere la posizione.";
+      if (err.code === 1) msg = "Permesso posizione negato. Abilitalo nelle impostazioni del browser.";
+      else if (err.code === 2) msg = "Posizione non disponibile.";
+      else if (err.code === 3) msg = "Richiesta posizione scaduta, riprova.";
+      statusEl.textContent = "⚠️ " + msg;
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+});
+
 updateClock();
 setInterval(updateClock, 30000);
 setInterval(renderResults, 60000);
 
-fetch("./data.json")
-  .then(r => r.json())
-  .then(json => {
-    DATA = json;
+Promise.all([
+  fetch("./data.json").then(r => r.json()),
+  fetch("./coords.json").then(r => r.json())
+])
+  .then(([dataJson, coordsJson]) => {
+    DATA = dataJson;
+    COORDS = coordsJson;
     state.dayType = guessDefaultDayType();
     document.getElementById("dayTypeSelect").value = state.dayType;
     buildLegend();
