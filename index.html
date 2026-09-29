@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orari Bus</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Orari Bus">
 <style>
   :root {
     --blue: #0b5fff;
@@ -428,6 +434,12 @@ fetch("./data.json")
     document.getElementById("resultsTitle").textContent = "Errore nel caricamento dei dati.";
     console.error(err);
   });
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => console.error("SW error:", err));
+  });
+}
 </script>
 
 </body>
