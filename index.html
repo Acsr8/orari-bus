@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orari Bus</title>
-./manifest.json
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0b5fff">
-./apple-touch-icon.png
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Orari Bus">
@@ -304,8 +304,6 @@ function findNearestStop(userLat, userLon){
   return best;
 }
 
-/* ---- Costruzione controlli (NON mostra mai risultati da sola) ---- */
-
 function buildLineButtons(){
   const container = document.getElementById("lineButtons");
   container.innerHTML = "";
@@ -369,8 +367,6 @@ function rebuildControls(){
   buildStopSelect();
 }
 
-/* ---- Gestione stato "in attesa di conferma" ---- */
-
 function markPending(){
   if (resultsShown) {
     document.getElementById("pendingNote").style.display = "block";
@@ -381,8 +377,6 @@ function clearPending(){
   document.getElementById("pendingNote").style.display = "none";
 }
 
-/* ---- Visualizzazione iniziale: nessun orario mostrato ---- */
-
 function showInitialPlaceholder(){
   resultsShown = false;
   clearPending();
@@ -391,8 +385,6 @@ function showInitialPlaceholder(){
   document.getElementById("emptyMsg").style.display = "none";
   document.getElementById("resultsTable").innerHTML = "";
 }
-
-/* ---- Calcolo e visualizzazione orari: SOLO su azione esplicita ---- */
 
 function doSearch(scrollToNext){
   const dir = DATA.linee[state.linea].direzioni[state.direzione];
@@ -472,8 +464,6 @@ function buildLegend(){
   document.getElementById("legendBox").innerHTML = html;
   document.getElementById("footerInfo").textContent = DATA.generato;
 }
-
-/* ---- Listener ---- */
 
 document.getElementById("dayTypeSelect").addEventListener("change", (e) => {
   state.dayType = e.target.value;

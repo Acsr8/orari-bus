@@ -1,37 +1,142 @@
 {
-  "PADOVA AUTOSTAZIONE": [45.4160, 11.8807],
-  "PADOVA FIERA": [45.3975, 11.8666],
-  "PADOVA FIAT": [45.4110, 11.9070],
-  "PADOVA STANGA V. VENEZIA": [45.4145, 11.9145],
-  "PADOVA CENTRO GIOTTO": [45.4210, 11.9370],
-  "PONTE DI BRENTA": [45.4270, 11.9500],
-  "BUSA DI VIGONZA": [45.4310, 11.9610],
-  "PERAGA V. GIOVANNI XXIII": [45.4370, 11.9700],
-  "PERAROLO": [45.4400, 11.9750],
-  "VIGONZA V. GRANDI": [45.4490, 11.9820],
-  "VIGONZA CHIESA": [45.4510, 11.9840],
-  "VIGONZA": [45.4500, 11.9833],
-  "BARBARIGA": [45.4540, 11.9950],
-  "PIANIGA": [45.4571, 12.0076],
-  "CALTANA": [45.4794, 12.0249],
-  "VILLA LANZA": [45.4900, 12.0500],
-  "BV. ZIANIGO": [45.5011, 12.0664],
-  "MIRANO OSPEDALE": [45.5020, 12.0950],
-  "MELLAREDO": [45.4700, 12.0180],
-  "CASELLE DEI RUFFI": [45.4900, 12.0250],
-  "S.MARIA DI SALA": [45.5089, 12.0363],
-  "TREPONTI DI S. MARIA DI SALA": [45.5170, 12.0430],
-  "STIGLIANO": [45.5280, 12.0500],
-  "BV. VALLI NOALE": [45.5400, 12.0600],
-  "NOALE (arrivo da Padova)": [45.5514, 12.0733],
-  "NOALE (partenza per Treviso)": [45.5514, 12.0733],
-  "NOALE (arrivo da Treviso)": [45.5514, 12.0733],
-  "NOALE (partenza per Padova)": [45.5514, 12.0733],
-  "MONIEGO": [45.5750, 12.1050],
-  "SCORZE'": [45.5931, 12.0997],
-  "SCORZE' DRIZZAGNO": [45.6050, 12.1250],
-  "ZERO BRANCO": [45.6000, 12.1667],
-  "QUINTO DI TREVISO": [45.6460, 12.1672],
-  "TREVISO AEROPORTO": [45.6484, 12.1944],
-  "TREVISO": [45.6669, 12.2436]
+ "PADOVA AUTOSTAZIONE": [
+  45.416,
+  11.8807
+ ],
+ "PADOVA FIERA": [
+  45.3975,
+  11.8666
+ ],
+ "PADOVA FIAT": [
+  45.411,
+  11.907
+ ],
+ "PADOVA STANGA V. VENEZIA": [
+  45.4145,
+  11.9145
+ ],
+ "PADOVA CENTRO GIOTTO": [
+  45.421,
+  11.937
+ ],
+ "PONTE DI BRENTA": [
+  45.427,
+  11.95
+ ],
+ "BUSA DI VIGONZA": [
+  45.431,
+  11.961
+ ],
+ "PERAGA V. GIOVANNI XXIII": [
+  45.437,
+  11.97
+ ],
+ "PERAROLO": [
+  45.44,
+  11.975
+ ],
+ "VIGONZA V. GRANDI": [
+  45.449,
+  11.982
+ ],
+ "VIGONZA CHIESA": [
+  45.451,
+  11.984
+ ],
+ "VIGONZA": [
+  45.45,
+  11.9833
+ ],
+ "BARBARIGA": [
+  45.454,
+  11.995
+ ],
+ "PIANIGA": [
+  45.4571,
+  12.0076
+ ],
+ "CALTANA": [
+  45.4794,
+  12.0249
+ ],
+ "VILLA LANZA": [
+  45.49,
+  12.05
+ ],
+ "BV. ZIANIGO": [
+  45.5011,
+  12.0664
+ ],
+ "MIRANO OSPEDALE": [
+  45.502,
+  12.095
+ ],
+ "MELLAREDO": [
+  45.47,
+  12.018
+ ],
+ "CASELLE DEI RUFFI": [
+  45.49,
+  12.025
+ ],
+ "S.MARIA DI SALA": [
+  45.5089,
+  12.0363
+ ],
+ "TREPONTI DI S. MARIA DI SALA": [
+  45.517,
+  12.043
+ ],
+ "STIGLIANO": [
+  45.528,
+  12.05
+ ],
+ "BV. VALLI NOALE": [
+  45.54,
+  12.06
+ ],
+ "NOALE (arrivo da Padova)": [
+  45.5514,
+  12.0733
+ ],
+ "NOALE (partenza per Treviso)": [
+  45.5514,
+  12.0733
+ ],
+ "NOALE (arrivo da Treviso)": [
+  45.5514,
+  12.0733
+ ],
+ "NOALE (partenza per Padova)": [
+  45.5514,
+  12.0733
+ ],
+ "MONIEGO": [
+  45.575,
+  12.105
+ ],
+ "SCORZE'": [
+  45.5931,
+  12.0997
+ ],
+ "SCORZE' DRIZZAGNO": [
+  45.605,
+  12.125
+ ],
+ "ZERO BRANCO": [
+  45.6,
+  12.1667
+ ],
+ "QUINTO DI TREVISO": [
+  45.646,
+  12.1672
+ ],
+ "TREVISO AEROPORTO": [
+  45.6484,
+  12.1944
+ ],
+ "TREVISO": [
+  45.6669,
+  12.2436
+ ]
 }
