@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orari Bus</title>
-<link rel="manifest" href="./manifest.json">
+./manifest.json
 <meta name="theme-color" content="#0b5fff">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+./apple-touch-icon.png
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Orari Bus">
@@ -38,21 +38,9 @@
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
-  header h1 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-  }
-  header p {
-    margin: 2px 0 0;
-    font-size: 0.8rem;
-    opacity: 0.85;
-  }
-  main {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 14px;
-  }
+  header h1 { margin: 0; font-size: 1.25rem; font-weight: 700; }
+  header p { margin: 2px 0 0; font-size: 0.8rem; opacity: 0.85; }
+  main { max-width: 640px; margin: 0 auto; padding: 14px; }
   .card {
     background: var(--card);
     border-radius: 14px;
@@ -85,10 +73,7 @@
     background-repeat: no-repeat;
     background-position: right 12px center;
   }
-  .linebtns {
-    display: flex;
-    gap: 8px;
-  }
+  .linebtns { display: flex; gap: 8px; }
   .linebtns button {
     flex: 1;
     padding: 10px 6px;
@@ -99,15 +84,8 @@
     font-size: 0.85rem;
     color: var(--text);
   }
-  .linebtns button.active {
-    background: var(--blue);
-    color: white;
-    border-color: var(--blue);
-  }
-  .dirbtns {
-    display: flex;
-    gap: 8px;
-  }
+  .linebtns button.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .dirbtns { display: flex; gap: 8px; }
   .dirbtns button {
     flex: 1;
     padding: 10px 6px;
@@ -118,37 +96,37 @@
     font-size: 0.82rem;
     color: var(--text);
   }
-  .dirbtns button.active {
-    background: var(--blue-dark);
-    color: white;
-    border-color: var(--blue-dark);
-  }
-  .results-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin: 4px 0 10px;
-    color: var(--text);
-  }
-  .results-title span {
-    font-weight: 400;
-    color: var(--muted);
-    font-size: 0.82rem;
-  }
-  table.times {
+  .dirbtns button.active { background: var(--blue-dark); color: white; border-color: var(--blue-dark); }
+  .searchbtn {
+    margin-top: 16px;
     width: 100%;
-    border-collapse: collapse;
-  }
-  table.times td {
-    padding: 10px 8px;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.95rem;
-  }
-  table.times tr:last-child td { border-bottom: none; }
-  .time {
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: none;
+    background: var(--blue);
+    color: white;
     font-weight: 700;
-    font-size: 1.05rem;
-    width: 70px;
+    font-size: 1rem;
+    box-shadow: 0 2px 6px rgba(11,95,255,0.35);
   }
+  .searchbtn:active { background: var(--blue-dark); }
+  .geobtn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 12px 10px;
+    border-radius: 10px;
+    border: 1.5px solid var(--blue);
+    background: #eef2ff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .results-title { font-size: 0.95rem; font-weight: 700; margin: 4px 0 10px; color: var(--text); }
+  .results-title span { font-weight: 400; color: var(--muted); font-size: 0.82rem; }
+  table.times { width: 100%; border-collapse: collapse; }
+  table.times td { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+  table.times tr:last-child td { border-bottom: none; }
+  .time { font-weight: 700; font-size: 1.05rem; width: 70px; }
   .badge {
     display: inline-block;
     font-size: 0.68rem;
@@ -159,17 +137,9 @@
     color: var(--blue-dark);
     margin-right: 4px;
   }
-  .badge.note {
-    background: #fff7ed;
-    color: #c2410c;
-  }
-  .vettore {
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-  .next-row {
-    background: #ecfdf3;
-  }
+  .badge.note { background: #fff7ed; color: #c2410c; }
+  .vettore { font-size: 0.72rem; color: var(--muted); }
+  .next-row { background: #ecfdf3; }
   .next-row .time { color: var(--green); }
   .next-label {
     display: inline-block;
@@ -182,16 +152,13 @@
     margin-left: 6px;
     vertical-align: middle;
   }
-  .empty {
+  .empty, .placeholder {
     color: var(--muted);
     font-size: 0.9rem;
-    padding: 12px 4px;
+    padding: 20px 4px;
+    text-align: center;
   }
-  .legend {
-    font-size: 0.78rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
+  .legend { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
   .legend b { color: var(--text); }
   details summary {
     font-size: 0.82rem;
@@ -200,11 +167,15 @@
     cursor: pointer;
     padding: 4px 0;
   }
-  footer {
-    text-align: center;
-    font-size: 0.72rem;
-    color: var(--muted);
+  footer { text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 10px; }
+  .pending-note {
+    font-size: 0.75rem;
+    color: #c2410c;
+    background: #fff7ed;
+    border-radius: 8px;
+    padding: 6px 10px;
     margin-top: 10px;
+    display: none;
   }
 </style>
 </head>
@@ -226,8 +197,6 @@
 
     <label>Fermata</label>
     <select id="stopSelect"></select>
-    <button id="geoBtn" type="button" style="margin-top:10px;width:100%;padding:12px 10px;border-radius:10px;border:1.5px solid var(--blue);background:#eef2ff;color:var(--blue-dark);font-weight:700;font-size:0.9rem;">📍 Trova fermata più vicina</button>
-    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
 
     <label>Tipo di giorno</label>
     <select id="dayTypeSelect">
@@ -237,10 +206,19 @@
       <option value="fns_sabato">Sabato, vacanze scolastiche</option>
       <option value="festivo">Domenica / Festivo</option>
     </select>
+
+    <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
+    <div class="pending-note" id="pendingNote">⚠️ Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
+
+    <button class="geobtn" id="geoBtn" type="button">📍 Trova fermata più vicina</button>
+    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="resultsCard">
     <div class="results-title" id="resultsTitle"></div>
+    <div class="placeholder" id="placeholderMsg">
+      👆 Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
+    </div>
     <table class="times" id="resultsTable"></table>
     <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
   </div>
@@ -259,6 +237,8 @@
 <script>
 let DATA = null;
 let COORDS = null;
+let resultsShown = false;
+
 let state = {
   linea: "E037",
   direzione: "andata",
@@ -284,10 +264,17 @@ function updateClock(){
 }
 
 function guessDefaultDayType(){
-  const d = new Date().getDay(); // 0=domenica, 6=sabato
+  const d = new Date().getDay();
   if (d === 0) return "festivo";
   if (d === 6) return "fsc_sabato";
   return "fsc_feriale";
+}
+
+function timeToMinutes(t){
+  if (!t || t === ".") return null;
+  const parts = t.replace(".", ":").split(":");
+  if (parts.length < 2) return null;
+  return parseInt(parts[0],10) * 60 + parseInt(parts[1],10);
 }
 
 function haversine(lat1, lon1, lat2, lon2){
@@ -317,12 +304,7 @@ function findNearestStop(userLat, userLon){
   return best;
 }
 
-function timeToMinutes(t){
-  if (!t || t === ".") return null;
-  const parts = t.replace(".", ":").split(":");
-  if (parts.length < 2) return null;
-  return parseInt(parts[0],10) * 60 + parseInt(parts[1],10);
-}
+/* ---- Costruzione controlli (NON mostra mai risultati da sola) ---- */
 
 function buildLineButtons(){
   const container = document.getElementById("lineButtons");
@@ -331,7 +313,13 @@ function buildLineButtons(){
     const btn = document.createElement("button");
     btn.textContent = key === "E037" ? "E037" : "E060-Z/V";
     btn.className = state.linea === key ? "active" : "";
-    btn.onclick = () => { state.linea = key; state.direzione = "andata"; state.fermata = null; render(); };
+    btn.onclick = () => {
+      state.linea = key;
+      state.direzione = "andata";
+      state.fermata = null;
+      rebuildControls();
+      markPending();
+    };
     container.appendChild(btn);
   });
 }
@@ -345,7 +333,12 @@ function buildDirButtons(){
     const btn = document.createElement("button");
     btn.textContent = dir.titolo;
     btn.className = state.direzione === key ? "active" : "";
-    btn.onclick = () => { state.direzione = key; state.fermata = null; render(); };
+    btn.onclick = () => {
+      state.direzione = key;
+      state.fermata = null;
+      rebuildControls();
+      markPending();
+    };
     container.appendChild(btn);
   });
 }
@@ -364,15 +357,51 @@ function buildStopSelect(){
     state.fermata = 0;
   }
   sel.value = state.fermata;
-  sel.onchange = () => { state.fermata = parseInt(sel.value,10); renderResults(true); };
+  sel.onchange = () => {
+    state.fermata = parseInt(sel.value,10);
+    markPending();
+  };
 }
 
-function renderResults(scrollToNext){
+function rebuildControls(){
+  buildLineButtons();
+  buildDirButtons();
+  buildStopSelect();
+}
+
+/* ---- Gestione stato "in attesa di conferma" ---- */
+
+function markPending(){
+  if (resultsShown) {
+    document.getElementById("pendingNote").style.display = "block";
+  }
+}
+
+function clearPending(){
+  document.getElementById("pendingNote").style.display = "none";
+}
+
+/* ---- Visualizzazione iniziale: nessun orario mostrato ---- */
+
+function showInitialPlaceholder(){
+  resultsShown = false;
+  clearPending();
+  document.getElementById("resultsTitle").textContent = "";
+  document.getElementById("placeholderMsg").style.display = "block";
+  document.getElementById("emptyMsg").style.display = "none";
+  document.getElementById("resultsTable").innerHTML = "";
+}
+
+/* ---- Calcolo e visualizzazione orari: SOLO su azione esplicita ---- */
+
+function doSearch(scrollToNext){
   const dir = DATA.linee[state.linea].direzioni[state.direzione];
   const stopIdx = state.fermata;
   const stopName = dir.fermate[stopIdx];
   const validCadenze = dayTypeMatch[state.dayType];
 
+  clearPending();
+  document.getElementById("placeholderMsg").style.display = "none";
   document.getElementById("resultsTitle").innerHTML =
     "📍 " + stopName + "<br><span>" + DATA.linee[state.linea].nome + " · " + dir.titolo + "</span>";
 
@@ -385,6 +414,7 @@ function renderResults(scrollToNext){
   const table = document.getElementById("resultsTable");
   const emptyMsg = document.getElementById("emptyMsg");
   table.innerHTML = "";
+  resultsShown = true;
 
   if (rows.length === 0){
     emptyMsg.style.display = "block";
@@ -394,7 +424,6 @@ function renderResults(scrollToNext){
 
   const nowMinutes = new Date().getHours()*60 + new Date().getMinutes();
   let nextFound = false;
-
   let nextRowEl = null;
 
   rows.forEach(r => {
@@ -423,9 +452,10 @@ function renderResults(scrollToNext){
     table.appendChild(tr);
   });
 
-  if (scrollToNext && nextRowEl) {
+  if (scrollToNext) {
     setTimeout(() => {
-      nextRowEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      const target = nextRowEl || document.getElementById("resultsCard");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 50);
   }
 }
@@ -443,16 +473,15 @@ function buildLegend(){
   document.getElementById("footerInfo").textContent = DATA.generato;
 }
 
-function render(){
-  buildLineButtons();
-  buildDirButtons();
-  buildStopSelect();
-  renderResults(true);
-}
+/* ---- Listener ---- */
 
 document.getElementById("dayTypeSelect").addEventListener("change", (e) => {
   state.dayType = e.target.value;
-  renderResults(true);
+  markPending();
+});
+
+document.getElementById("searchBtn").addEventListener("click", () => {
+  doSearch(true);
 });
 
 document.getElementById("geoBtn").addEventListener("click", () => {
@@ -477,11 +506,12 @@ document.getElementById("geoBtn").addEventListener("click", () => {
       state.linea = best.linea;
       state.direzione = best.direzione;
       state.fermata = best.fermata;
-      render();
+      rebuildControls();
+      markPending();
       const distText = best.dist < 1
         ? Math.round(best.dist * 1000) + " m"
         : best.dist.toFixed(1) + " km";
-      statusEl.textContent = "✅ Fermata più vicina: " + best.stopName + " (~" + distText + ")";
+      statusEl.textContent = "✅ Fermata più vicina: " + best.stopName + " (~" + distText + "). Premi \"Mostra orari\" per vedere le corse.";
     },
     (err) => {
       let msg = "Impossibile ottenere la posizione.";
@@ -496,7 +526,7 @@ document.getElementById("geoBtn").addEventListener("click", () => {
 
 updateClock();
 setInterval(updateClock, 30000);
-setInterval(() => renderResults(false), 60000);
+setInterval(() => { if (resultsShown) doSearch(false); }, 60000);
 
 Promise.all([
   fetch("./data.json").then(r => r.json()),
@@ -508,7 +538,8 @@ Promise.all([
     state.dayType = guessDefaultDayType();
     document.getElementById("dayTypeSelect").value = state.dayType;
     buildLegend();
-    render();
+    rebuildControls();
+    showInitialPlaceholder();
   })
   .catch(err => {
     document.getElementById("resultsTitle").textContent = "Errore nel caricamento dei dati.";
