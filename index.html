@@ -201,10 +201,7 @@
     <label>Tipo di giorno</label>
     <select id="dayTypeSelect">
       <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
-      <option value="fsc_sabato">Sabato, periodo scolastico</option>
       <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
-      <option value="fns_sabato">Sabato, vacanze scolastiche</option>
-      <option value="festivo">Domenica / Festivo</option>
     </select>
 
     <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
@@ -248,10 +245,7 @@ let state = {
 
 const dayTypeMatch = {
   fsc_feriale: ["fer", "fsc", "fVsc", "fF"],
-  fsc_sabato:  ["fer", "fsc", "Ssc", "Sfns", "fF"],
-  fns_feriale: ["fer", "fns", "Sfns", "fF"],
-  fns_sabato:  ["fer", "Sfns", "fF"],
-  festivo:     ["FEST", "fF"]
+  fns_feriale: ["fer", "fns", "Sfns", "fF"]
 };
 
 function pad(n){ return n.toString().padStart(2,"0"); }
@@ -264,9 +258,6 @@ function updateClock(){
 }
 
 function guessDefaultDayType(){
-  const d = new Date().getDay();
-  if (d === 0) return "festivo";
-  if (d === 6) return "fsc_sabato";
   return "fsc_feriale";
 }
 
@@ -304,12 +295,19 @@ function findNearestStop(userLat, userLon){
   return best;
 }
 
+function lineLabel(key){
+  if (key === "E037") return "E037";
+  if (key === "E060") return "E060";
+  if (key === "101") return "101";
+  return key;
+}
+
 function buildLineButtons(){
   const container = document.getElementById("lineButtons");
   container.innerHTML = "";
   Object.keys(DATA.linee).forEach(key => {
     const btn = document.createElement("button");
-    btn.textContent = key === "E037" ? "E037" : "E060-Z/V";
+    btn.textContent = lineLabel(key);
     btn.className = state.linea === key ? "active" : "";
     btn.onclick = () => {
       state.linea = key;

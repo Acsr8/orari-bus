@@ -1,4 +1,4 @@
-const CACHE_NAME = "orari-bus-v5";
+const CACHE_NAME = "orari-bus-v6";
 const FILES_TO_CACHE = [
   "./index.html",
   "./data.json",
