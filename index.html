@@ -2,10 +2,433 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orari Bus</title>
+<style>
+  :root {
+    --blue: #0b5fff;
+    --blue-dark: #0846c4;
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --text: #1a1d29;
+    --muted: #6b7280;
+    --green: #16a34a;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 40px;
+  }
+  header {
+    background: var(--blue);
+    color: white;
+    padding: 18px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  header p {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    opacity: 0.85;
+  }
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 14px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  label:first-child { margin-top: 0; }
+  select {
+    width: 100%;
+    padding: 12px 10px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    font-size: 1rem;
+    background: #fafbfc;
+    color: var(--text);
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  .linebtns {
+    display: flex;
+    gap: 8px;
+  }
+  .linebtns button {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fafbfc;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .linebtns button.active {
+    background: var(--blue);
+    color: white;
+    border-color: var(--blue);
+  }
+  .dirbtns {
+    display: flex;
+    gap: 8px;
+  }
+  .dirbtns button {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fafbfc;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+  .dirbtns button.active {
+    background: var(--blue-dark);
+    color: white;
+    border-color: var(--blue-dark);
+  }
+  .results-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 4px 0 10px;
+    color: var(--text);
+  }
+  .results-title span {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+  table.times {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.times td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+  }
+  table.times tr:last-child td { border-bottom: none; }
+  .time {
+    font-weight: 700;
+    font-size: 1.05rem;
+    width: 70px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #eef2ff;
+    color: var(--blue-dark);
+    margin-right: 4px;
+  }
+  .badge.note {
+    background: #fff7ed;
+    color: #c2410c;
+  }
+  .vettore {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .next-row {
+    background: #ecfdf3;
+  }
+  .next-row .time { color: var(--green); }
+  .next-label {
+    display: inline-block;
+    background: var(--green);
+    color: white;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .empty {
+    color: var(--muted);
+    font-size: 0.9rem;
+    padding: 12px 4px;
+  }
+  .legend {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .legend b { color: var(--text); }
+  details summary {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--blue-dark);
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  footer {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+</style>
 </head>
 <body>
-<h1>Funziona! 🎉</h1>
-<p>Pagina di test — Orari Bus E037 / E060-V</p>
+
+<header>
+  <h1>🚌 Orari Bus</h1>
+  <p id="clock"></p>
+</header>
+
+<main>
+
+  <div class="card">
+    <label>Linea</label>
+    <div class="linebtns" id="lineButtons"></div>
+
+    <label>Direzione</label>
+    <div class="dirbtns" id="dirButtons"></div>
+
+    <label>Fermata</label>
+    <select id="stopSelect"></select>
+
+    <label>Tipo di giorno</label>
+    <select id="dayTypeSelect">
+      <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
+      <option value="fsc_sabato">Sabato, periodo scolastico</option>
+      <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
+      <option value="fns_sabato">Sabato, vacanze scolastiche</option>
+      <option value="festivo">Domenica / Festivo</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <div class="results-title" id="resultsTitle"></div>
+    <table class="times" id="resultsTable"></table>
+    <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>Legenda cadenze e note</summary>
+      <div class="legend" id="legendBox" style="margin-top:8px;"></div>
+    </details>
+  </div>
+
+  <footer id="footerInfo"></footer>
+
+</main>
+
+<script>
+let DATA = null;
+let state = {
+  linea: "E037",
+  direzione: "andata",
+  fermata: null,
+  dayType: "fsc_feriale"
+};
+
+const dayTypeMatch = {
+  fsc_feriale: ["fer", "fsc", "fVsc", "fF"],
+  fsc_sabato:  ["fer", "fsc", "Ssc", "Sfns", "fF"],
+  fns_feriale: ["fer", "fns", "Sfns", "fF"],
+  fns_sabato:  ["fer", "Sfns", "fF"],
+  festivo:     ["FEST", "fF"]
+};
+
+function pad(n){ return n.toString().padStart(2,"0"); }
+
+function updateClock(){
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }) +
+    " · " + pad(now.getHours()) + ":" + pad(now.getMinutes());
+}
+
+function guessDefaultDayType(){
+  const d = new Date().getDay(); // 0=domenica, 6=sabato
+  if (d === 0) return "festivo";
+  if (d === 6) return "fsc_sabato";
+  return "fsc_feriale";
+}
+
+function timeToMinutes(t){
+  if (!t || t === ".") return null;
+  const parts = t.replace(".", ":").split(":");
+  if (parts.length < 2) return null;
+  return parseInt(parts[0],10) * 60 + parseInt(parts[1],10);
+}
+
+function buildLineButtons(){
+  const container = document.getElementById("lineButtons");
+  container.innerHTML = "";
+  Object.keys(DATA.linee).forEach(key => {
+    const btn = document.createElement("button");
+    btn.textContent = key === "E037" ? "E037" : "E060-Z/V";
+    btn.className = state.linea === key ? "active" : "";
+    btn.onclick = () => { state.linea = key; state.direzione = "andata"; state.fermata = null; render(); };
+    container.appendChild(btn);
+  });
+}
+
+function buildDirButtons(){
+  const container = document.getElementById("dirButtons");
+  container.innerHTML = "";
+  const linea = DATA.linee[state.linea];
+  Object.keys(linea.direzioni).forEach(key => {
+    const dir = linea.direzioni[key];
+    const btn = document.createElement("button");
+    btn.textContent = dir.titolo;
+    btn.className = state.direzione === key ? "active" : "";
+    btn.onclick = () => { state.direzione = key; state.fermata = null; render(); };
+    container.appendChild(btn);
+  });
+}
+
+function buildStopSelect(){
+  const sel = document.getElementById("stopSelect");
+  sel.innerHTML = "";
+  const dir = DATA.linee[state.linea].direzioni[state.direzione];
+  dir.fermate.forEach((f, idx) => {
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = f;
+    sel.appendChild(opt);
+  });
+  if (state.fermata === null || state.fermata >= dir.fermate.length) {
+    state.fermata = 0;
+  }
+  sel.value = state.fermata;
+  sel.onchange = () => { state.fermata = parseInt(sel.value,10); renderResults(); };
+}
+
+function renderResults(){
+  const dir = DATA.linee[state.linea].direzioni[state.direzione];
+  const stopIdx = state.fermata;
+  const stopName = dir.fermate[stopIdx];
+  const validCadenze = dayTypeMatch[state.dayType];
+
+  document.getElementById("resultsTitle").innerHTML =
+    "📍 " + stopName + "<br><span>" + DATA.linee[state.linea].nome + " · " + dir.titolo + "</span>";
+
+  let rows = dir.corse
+    .filter(c => validCadenze.includes(c.cadenza))
+    .map(c => ({ time: c.times[stopIdx], cadenza: c.cadenza, vettore: c.vettore, note: c.note }))
+    .filter(r => r.time && r.time !== ".")
+    .sort((a,b) => timeToMinutes(a.time) - timeToMinutes(b.time));
+
+  const table = document.getElementById("resultsTable");
+  const emptyMsg = document.getElementById("emptyMsg");
+  table.innerHTML = "";
+
+  if (rows.length === 0){
+    emptyMsg.style.display = "block";
+    return;
+  }
+  emptyMsg.style.display = "none";
+
+  const nowMinutes = new Date().getHours()*60 + new Date().getMinutes();
+  let nextFound = false;
+
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    const isNext = !nextFound && timeToMinutes(r.time) >= nowMinutes;
+    if (isNext) { tr.className = "next-row"; nextFound = true; }
+
+    const tdTime = document.createElement("td");
+    tdTime.className = "time";
+    tdTime.textContent = r.time;
+    if (isNext) {
+      const lbl = document.createElement("span");
+      lbl.className = "next-label";
+      lbl.textContent = "PROSSIMA";
+      tdTime.appendChild(lbl);
+    }
+
+    const tdInfo = document.createElement("td");
+    let html = "<span class='badge'>" + r.cadenza + "</span>";
+    if (r.note) html += "<span class='badge note'>" + r.note + "</span>";
+    html += "<div class='vettore'>" + r.vettore + "</div>";
+    tdInfo.innerHTML = html;
+
+    tr.appendChild(tdTime);
+    tr.appendChild(tdInfo);
+    table.appendChild(tr);
+  });
+}
+
+function buildLegend(){
+  let html = "<b>Cadenze:</b><br>";
+  Object.entries(DATA.cadenze_legenda).forEach(([k,v]) => {
+    html += "<b>" + k + "</b> = " + v + "<br>";
+  });
+  html += "<br><b>Note:</b><br>";
+  Object.entries(DATA.note_legenda).forEach(([k,v]) => {
+    html += "<b>" + k + "</b> = " + v + "<br>";
+  });
+  document.getElementById("legendBox").innerHTML = html;
+  document.getElementById("footerInfo").textContent = DATA.generato;
+}
+
+function render(){
+  buildLineButtons();
+  buildDirButtons();
+  buildStopSelect();
+  renderResults();
+}
+
+document.getElementById("dayTypeSelect").addEventListener("change", (e) => {
+  state.dayType = e.target.value;
+  renderResults();
+});
+
+updateClock();
+setInterval(updateClock, 30000);
+setInterval(renderResults, 60000);
+
+fetch("./data.json")
+  .then(r => r.json())
+  .then(json => {
+    DATA = json;
+    state.dayType = guessDefaultDayType();
+    document.getElementById("dayTypeSelect").value = state.dayType;
+    buildLegend();
+    render();
+  })
+  .catch(err => {
+    document.getElementById("resultsTitle").textContent = "Errore nel caricamento dei dati.";
+    console.error(err);
+  });
+</script>
+
 </body>
 </html>
