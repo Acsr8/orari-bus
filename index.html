@@ -364,10 +364,10 @@ function buildStopSelect(){
     state.fermata = 0;
   }
   sel.value = state.fermata;
-  sel.onchange = () => { state.fermata = parseInt(sel.value,10); renderResults(); };
+  sel.onchange = () => { state.fermata = parseInt(sel.value,10); renderResults(true); };
 }
 
-function renderResults(){
+function renderResults(scrollToNext){
   const dir = DATA.linee[state.linea].direzioni[state.direzione];
   const stopIdx = state.fermata;
   const stopName = dir.fermate[stopIdx];
@@ -395,10 +395,12 @@ function renderResults(){
   const nowMinutes = new Date().getHours()*60 + new Date().getMinutes();
   let nextFound = false;
 
+  let nextRowEl = null;
+
   rows.forEach(r => {
     const tr = document.createElement("tr");
     const isNext = !nextFound && timeToMinutes(r.time) >= nowMinutes;
-    if (isNext) { tr.className = "next-row"; nextFound = true; }
+    if (isNext) { tr.className = "next-row"; nextFound = true; nextRowEl = tr; }
 
     const tdTime = document.createElement("td");
     tdTime.className = "time";
@@ -420,6 +422,12 @@ function renderResults(){
     tr.appendChild(tdInfo);
     table.appendChild(tr);
   });
+
+  if (scrollToNext && nextRowEl) {
+    setTimeout(() => {
+      nextRowEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  }
 }
 
 function buildLegend(){
@@ -439,12 +447,12 @@ function render(){
   buildLineButtons();
   buildDirButtons();
   buildStopSelect();
-  renderResults();
+  renderResults(true);
 }
 
 document.getElementById("dayTypeSelect").addEventListener("change", (e) => {
   state.dayType = e.target.value;
-  renderResults();
+  renderResults(true);
 });
 
 document.getElementById("geoBtn").addEventListener("click", () => {
@@ -488,7 +496,7 @@ document.getElementById("geoBtn").addEventListener("click", () => {
 
 updateClock();
 setInterval(updateClock, 30000);
-setInterval(renderResults, 60000);
+setInterval(() => renderResults(false), 60000);
 
 Promise.all([
   fetch("./data.json").then(r => r.json()),
