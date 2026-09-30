@@ -19,6 +19,7 @@
     --text: #1a1d29;
     --muted: #6b7280;
     --green: #16a34a;
+    --red: #dc2626;
     --border: #e5e7eb;
   }
   * { box-sizing: border-box; }
@@ -40,6 +41,26 @@
   }
   header h1 { margin: 0; font-size: 1.25rem; font-weight: 700; }
   header p { margin: 2px 0 0; font-size: 0.8rem; opacity: 0.85; }
+  .maintabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .maintabs button {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.12);
+    color: white;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+  .maintabs button.active {
+    background: white;
+    color: var(--blue-dark);
+    border-color: white;
+  }
   main { max-width: 640px; margin: 0 auto; padding: 14px; }
   .card {
     background: var(--card);
@@ -60,7 +81,7 @@
     margin-top: 12px;
   }
   label:first-child { margin-top: 0; }
-  select {
+  select, input[type="datetime-local"] {
     width: 100%;
     padding: 12px 10px;
     border-radius: 10px;
@@ -68,6 +89,8 @@
     font-size: 1rem;
     background: #fafbfc;
     color: var(--text);
+  }
+  select {
     appearance: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
     background-repeat: no-repeat;
@@ -97,7 +120,7 @@
     color: var(--text);
   }
   .dirbtns button.active { background: var(--blue-dark); color: white; border-color: var(--blue-dark); }
-  .searchbtn {
+  .searchbtn, .savebtn {
     margin-top: 16px;
     width: 100%;
     padding: 14px 10px;
@@ -109,7 +132,19 @@
     font-size: 1rem;
     box-shadow: 0 2px 6px rgba(11,95,255,0.35);
   }
-  .searchbtn:active { background: var(--blue-dark); }
+  .searchbtn:active, .savebtn:active { background: var(--blue-dark); }
+  .cancelbtn {
+    margin-top: 8px;
+    width: 100%;
+    padding: 10px 10px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fafbfc;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: none;
+  }
   .geobtn {
     margin-top: 10px;
     width: 100%;
@@ -177,6 +212,90 @@
     margin-top: 10px;
     display: none;
   }
+  .stat-status {
+    font-size: 0.82rem;
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    display: none;
+  }
+  .stat-status.ok { background: #ecfdf3; color: #15803d; display: block; }
+  .stat-status.err { background: #fff1f2; color: #b91c1c; display: block; }
+  .stat-status.pending { background: #eef2ff; color: var(--blue-dark); display: block; }
+  .stat-intro {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .edit-banner {
+    font-size: 0.82rem;
+    color: var(--blue-dark);
+    background: #eef2ff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    display: none;
+    font-weight: 600;
+  }
+  .rec-list { margin-top: 6px; }
+  .rec-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #fafbfc;
+  }
+  .rec-item .rec-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .rec-item .rec-linea {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .rec-item .rec-minuti {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--blue-dark);
+  }
+  .rec-item .rec-tratta {
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+  .rec-item .rec-orari {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .rec-item .rec-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .rec-item .rec-actions button {
+    flex: 1;
+    padding: 7px 6px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .rec-item .rec-actions button.edit { color: var(--blue-dark); border-color: var(--blue); }
+  .rec-item .rec-actions button.del { color: var(--red); border-color: var(--red); }
+  .refreshbtn {
+    width: 100%;
+    padding: 10px 10px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fafbfc;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
 </style>
 </head>
 <body>
@@ -184,54 +303,107 @@
 <header>
   <h1>🚌 Orari Bus</h1>
   <p id="clock"></p>
+  <div class="maintabs">
+    <button id="tabOrariBtn" class="active" type="button">🔍 Orari</button>
+    <button id="tabStatsBtn" type="button">📊 Statistiche</button>
+  </div>
 </header>
 
 <main>
 
-  <div class="card">
-    <label>Linea</label>
-    <div class="linebtns" id="lineButtons"></div>
+  <!-- ===================== TAB 1: ORARI ===================== -->
+  <div id="tabOrari">
 
-    <label>Direzione</label>
-    <div class="dirbtns" id="dirButtons"></div>
+    <div class="card">
+      <label>Linea</label>
+      <div class="linebtns" id="lineButtons"></div>
 
-    <label>Fermata</label>
-    <select id="stopSelect"></select>
+      <label>Direzione</label>
+      <div class="dirbtns" id="dirButtons"></div>
 
-    <label>Tipo di giorno</label>
-    <select id="dayTypeSelect">
-      <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
-      <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
-    </select>
+      <label>Fermata</label>
+      <select id="stopSelect"></select>
 
-    <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
-    <div class="pending-note" id="pendingNote">⚠️ Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
+      <label>Tipo di giorno</label>
+      <select id="dayTypeSelect">
+        <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
+        <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
+      </select>
 
-    <button class="geobtn" id="geoBtn" type="button">📍 Trova fermata più vicina</button>
-    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
-  </div>
+      <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
+      <div class="pending-note" id="pendingNote">⚠️ Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
 
-  <div class="card" id="resultsCard">
-    <div class="results-title" id="resultsTitle"></div>
-    <div class="placeholder" id="placeholderMsg">
-      👆 Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
+      <button class="geobtn" id="geoBtn" type="button">📍 Trova fermata più vicina</button>
+      <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
     </div>
-    <table class="times" id="resultsTable"></table>
-    <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
+
+    <div class="card" id="resultsCard">
+      <div class="results-title" id="resultsTitle"></div>
+      <div class="placeholder" id="placeholderMsg">
+        👆 Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
+      </div>
+      <table class="times" id="resultsTable"></table>
+      <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
+    </div>
+
+    <div class="card">
+      <details>
+        <summary>Legenda cadenze e note</summary>
+        <div class="legend" id="legendBox" style="margin-top:8px;"></div>
+      </details>
+    </div>
+
+    <footer id="footerInfo"></footer>
   </div>
 
-  <div class="card">
-    <details>
-      <summary>Legenda cadenze e note</summary>
-      <div class="legend" id="legendBox" style="margin-top:8px;"></div>
-    </details>
-  </div>
+  <!-- ===================== TAB 2: STATISTICHE ===================== -->
+  <div id="tabStats" style="display:none;">
 
-  <footer id="footerInfo"></footer>
+    <div class="card">
+      <div class="edit-banner" id="editBanner">✏️ Stai modificando una rilevazione esistente.</div>
+      <div class="stat-intro">Registra una rilevazione reale di percorrenza. I dati vengono salvati nel tuo Google Sheet collegato.</div>
+
+      <label>Linea</label>
+      <select id="statLinea"></select>
+
+      <label>Direzione</label>
+      <select id="statDirezione"></select>
+
+      <label>Fermata di partenza</label>
+      <select id="statPartenza"></select>
+
+      <label>Fermata di arrivo</label>
+      <select id="statArrivo"></select>
+
+      <label>Data/ora inizio tratta</label>
+      <input type="datetime-local" id="statInizio">
+
+      <label>Data/ora fine tratta</label>
+      <input type="datetime-local" id="statFine">
+
+      <button class="savebtn" id="statSaveBtn" type="button">💾 Salva rilevazione</button>
+      <button class="cancelbtn" id="statCancelBtn" type="button">✖️ Annulla modifica</button>
+      <div class="stat-status" id="statStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="results-title">📋 Rilevazioni salvate</div>
+      <button class="refreshbtn" id="statRefreshBtn" type="button">🔄 Aggiorna elenco</button>
+      <div class="rec-list" id="recList">
+        <div class="placeholder">Premi "Aggiorna elenco" per caricare le rilevazioni salvate.</div>
+      </div>
+    </div>
+
+  </div>
 
 </main>
 
 <script>
+/* ============================================================
+   CONFIGURAZIONE
+   ============================================================ */
+const SHEET_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5cNdbRUY9H8DI5IMGGMgju3lVp3L8Cm9SI5k4K-GGOyxqcRquMHtwSUWkKmF0zdb4og/exec";
+
 let DATA = null;
 let COORDS = null;
 let resultsShown = false;
@@ -242,6 +414,15 @@ let state = {
   fermata: null,
   dayType: "fsc_feriale"
 };
+
+let statState = {
+  linea: null,
+  direzione: null,
+  partenza: 0,
+  arrivo: 1
+};
+
+let editingRowId = null; // se valorizzato, il salvataggio farà un UPDATE invece di un INSERT
 
 const dayTypeMatch = {
   fsc_feriale: ["fer", "fsc", "fVsc", "fF"],
@@ -301,6 +482,27 @@ function lineLabel(key){
   if (key === "101") return "101";
   return key;
 }
+
+/* ============================================================
+   TAB SWITCHING
+   ============================================================ */
+document.getElementById("tabOrariBtn").addEventListener("click", () => {
+  document.getElementById("tabOrariBtn").classList.add("active");
+  document.getElementById("tabStatsBtn").classList.remove("active");
+  document.getElementById("tabOrari").style.display = "block";
+  document.getElementById("tabStats").style.display = "none";
+});
+
+document.getElementById("tabStatsBtn").addEventListener("click", () => {
+  document.getElementById("tabStatsBtn").classList.add("active");
+  document.getElementById("tabOrariBtn").classList.remove("active");
+  document.getElementById("tabStats").style.display = "block";
+  document.getElementById("tabOrari").style.display = "none";
+});
+
+/* ============================================================
+   TAB 1: ORARI (ricerca)
+   ============================================================ */
 
 function buildLineButtons(){
   const container = document.getElementById("lineButtons");
@@ -512,6 +714,318 @@ document.getElementById("geoBtn").addEventListener("click", () => {
   );
 });
 
+/* ============================================================
+   TAB 2: STATISTICHE (inserimento / modifica / elenco)
+   ============================================================ */
+
+function buildStatLineaSelect(){
+  const sel = document.getElementById("statLinea");
+  sel.innerHTML = "";
+  Object.keys(DATA.linee).forEach(key => {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = lineLabel(key) + " - " + DATA.linee[key].nome;
+    sel.appendChild(opt);
+  });
+  if (!statState.linea || !DATA.linee[statState.linea]) {
+    statState.linea = Object.keys(DATA.linee)[0];
+  }
+  sel.value = statState.linea;
+}
+
+function buildStatDirezioneSelect(){
+  const sel = document.getElementById("statDirezione");
+  sel.innerHTML = "";
+  const linea = DATA.linee[statState.linea];
+  Object.keys(linea.direzioni).forEach(key => {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = linea.direzioni[key].titolo;
+    sel.appendChild(opt);
+  });
+  if (!statState.direzione || !linea.direzioni[statState.direzione]) {
+    statState.direzione = Object.keys(linea.direzioni)[0];
+  }
+  sel.value = statState.direzione;
+}
+
+function buildStatPartenzaSelect(){
+  const sel = document.getElementById("statPartenza");
+  sel.innerHTML = "";
+  const dir = DATA.linee[statState.linea].direzioni[statState.direzione];
+  dir.fermate.forEach((f, idx) => {
+    if (idx === dir.fermate.length - 1) return;
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = f;
+    sel.appendChild(opt);
+  });
+  if (statState.partenza >= dir.fermate.length - 1) {
+    statState.partenza = 0;
+  }
+  sel.value = statState.partenza;
+}
+
+function buildStatArrivoSelect(){
+  const sel = document.getElementById("statArrivo");
+  sel.innerHTML = "";
+  const dir = DATA.linee[statState.linea].direzioni[statState.direzione];
+  dir.fermate.forEach((f, idx) => {
+    if (idx <= statState.partenza) return;
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = f;
+    sel.appendChild(opt);
+  });
+  if (statState.arrivo <= statState.partenza || statState.arrivo >= dir.fermate.length) {
+    statState.arrivo = statState.partenza + 1;
+  }
+  sel.value = statState.arrivo;
+}
+
+function rebuildStatControls(){
+  buildStatLineaSelect();
+  buildStatDirezioneSelect();
+  buildStatPartenzaSelect();
+  buildStatArrivoSelect();
+}
+
+document.getElementById("statLinea").addEventListener("change", (e) => {
+  statState.linea = e.target.value;
+  statState.direzione = null;
+  statState.partenza = 0;
+  statState.arrivo = 1;
+  buildStatDirezioneSelect();
+  buildStatPartenzaSelect();
+  buildStatArrivoSelect();
+});
+
+document.getElementById("statDirezione").addEventListener("change", (e) => {
+  statState.direzione = e.target.value;
+  statState.partenza = 0;
+  statState.arrivo = 1;
+  buildStatPartenzaSelect();
+  buildStatArrivoSelect();
+});
+
+document.getElementById("statPartenza").addEventListener("change", (e) => {
+  statState.partenza = parseInt(e.target.value, 10);
+  buildStatArrivoSelect();
+});
+
+document.getElementById("statArrivo").addEventListener("change", (e) => {
+  statState.arrivo = parseInt(e.target.value, 10);
+});
+
+/* Prepopolazione automatica data/ora corrente al primo click, se il campo è vuoto */
+function nowLocalISOString(){
+  const d = new Date();
+  const tzOffset = d.getTimezoneOffset() * 60000;
+  return new Date(d - tzOffset).toISOString().slice(0,16);
+}
+
+function attachAutoNow(inputId){
+  const el = document.getElementById(inputId);
+  const fill = () => { if (!el.value) el.value = nowLocalISOString(); };
+  el.addEventListener("focus", fill);
+  el.addEventListener("click", fill);
+}
+
+attachAutoNow("statInizio");
+attachAutoNow("statFine");
+
+function formatDT(value){
+  if (!value) return "";
+  const [datePart, timePart] = value.split("T");
+  return datePart + " " + timePart;
+}
+
+function parseDTForInput(value){
+  // Da "AAAA-MM-GG HH:MM" (o simile) a "AAAA-MM-GGTHH:MM" per il campo datetime-local
+  if (!value) return "";
+  return value.replace(" ", "T").slice(0,16);
+}
+
+function computeMinuti(inizioValue, fineValue){
+  const dInizio = new Date(inizioValue);
+  const dFine = new Date(fineValue);
+  const diffMs = dFine - dInizio;
+  return Math.round(diffMs / 60000);
+}
+
+function resetStatForm(){
+  editingRowId = null;
+  document.getElementById("editBanner").style.display = "none";
+  document.getElementById("statCancelBtn").style.display = "none";
+  document.getElementById("statSaveBtn").textContent = "💾 Salva rilevazione";
+  document.getElementById("statInizio").value = "";
+  document.getElementById("statFine").value = "";
+  document.getElementById("statStatus").className = "stat-status";
+  document.getElementById("statStatus").textContent = "";
+}
+
+document.getElementById("statCancelBtn").addEventListener("click", resetStatForm);
+
+document.getElementById("statSaveBtn").addEventListener("click", async () => {
+  const statusEl = document.getElementById("statStatus");
+  const inizio = document.getElementById("statInizio").value;
+  const fine = document.getElementById("statFine").value;
+
+  if (!inizio || !fine) {
+    statusEl.className = "stat-status err";
+    statusEl.textContent = "⚠️ Inserisci sia l'orario di inizio che di fine tratta.";
+    return;
+  }
+
+  const minuti = computeMinuti(inizio, fine);
+  if (minuti <= 0) {
+    statusEl.className = "stat-status err";
+    statusEl.textContent = "⚠️ L'orario di fine deve essere successivo a quello di inizio.";
+    return;
+  }
+
+  const linea = DATA.linee[statState.linea];
+  const dir = linea.direzioni[statState.direzione];
+  const partenza = dir.fermate[statState.partenza];
+  const arrivo = dir.fermate[statState.arrivo];
+
+  statusEl.className = "stat-status pending";
+  statusEl.textContent = "💾 Salvataggio in corso...";
+
+  const payload = {
+    action: editingRowId ? "update" : "create",
+    linea: lineLabel(statState.linea),
+    direzione: dir.titolo,
+    partenza: partenza,
+    arrivo: arrivo,
+    inizio: formatDT(inizio),
+    fine: formatDT(fine),
+    minuti: minuti
+  };
+  if (editingRowId) payload.id = editingRowId;
+
+  try {
+    const resp = await fetch(SHEET_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const json = await resp.json();
+    if (json.result === "success") {
+      statusEl.className = "stat-status ok";
+      statusEl.textContent = editingRowId
+        ? "✅ Rilevazione aggiornata correttamente."
+        : "✅ Rilevazione salvata correttamente.";
+      resetStatForm();
+      loadRecordsList();
+    } else {
+      statusEl.className = "stat-status err";
+      statusEl.textContent = "⚠️ Errore durante il salvataggio: " + (json.error || "sconosciuto");
+    }
+  } catch (err) {
+    statusEl.className = "stat-status err";
+    statusEl.textContent = "⚠️ Errore di connessione: " + err.message;
+  }
+});
+
+/* ---- Elenco rilevazioni: caricamento, modifica, cancellazione ---- */
+
+async function loadRecordsList(){
+  const container = document.getElementById("recList");
+  container.innerHTML = "<div class='placeholder'>⏳ Caricamento in corso...</div>";
+  try {
+    const resp = await fetch(SHEET_SCRIPT_URL + "?action=list");
+    const json = await resp.json();
+    if (json.result !== "success") {
+      container.innerHTML = "<div class='placeholder'>⚠️ Errore nel caricamento: " + (json.error || "sconosciuto") + "</div>";
+      return;
+    }
+    const records = json.records || [];
+    if (records.length === 0) {
+      container.innerHTML = "<div class='placeholder'>Nessuna rilevazione salvata.</div>";
+      return;
+    }
+    container.innerHTML = "";
+    // Mostra le più recenti in cima
+    records.slice().reverse().forEach(rec => {
+      const div = document.createElement("div");
+      div.className = "rec-item";
+      div.innerHTML =
+        "<div class='rec-top'><span class='rec-linea'>" + rec.linea + "</span>" +
+        "<span class='rec-minuti'>" + rec.minuti + " min</span></div>" +
+        "<div class='rec-tratta'>" + rec.partenza + " → " + rec.arrivo + " <span style='color:var(--muted)'>(" + rec.direzione + ")</span></div>" +
+        "<div class='rec-orari'>Inizio: " + rec.inizio + " · Fine: " + rec.fine + "</div>" +
+        "<div class='rec-actions'>" +
+        "<button class='edit'>✏️ Modifica</button>" +
+        "<button class='del'>🗑️ Elimina</button>" +
+        "</div>";
+      div.querySelector(".edit").addEventListener("click", () => startEditRecord(rec));
+      div.querySelector(".del").addEventListener("click", () => deleteRecord(rec.id));
+      container.appendChild(div);
+    });
+  } catch (err) {
+    container.innerHTML = "<div class='placeholder'>⚠️ Errore di connessione: " + err.message + "</div>";
+  }
+}
+
+function startEditRecord(rec){
+  // Prova a impostare linea/direzione/fermate corrispondenti, se ancora esistenti nei dati correnti
+  const lineaKey = Object.keys(DATA.linee).find(k => lineLabel(k) === rec.linea) || Object.keys(DATA.linee)[0];
+  statState.linea = lineaKey;
+  buildStatLineaSelect();
+
+  const linea = DATA.linee[lineaKey];
+  const dirKey = Object.keys(linea.direzioni).find(k => linea.direzioni[k].titolo === rec.direzione) || Object.keys(linea.direzioni)[0];
+  statState.direzione = dirKey;
+  buildStatDirezioneSelect();
+
+  const dir = linea.direzioni[dirKey];
+  const pIdx = dir.fermate.indexOf(rec.partenza);
+  const aIdx = dir.fermate.indexOf(rec.arrivo);
+  statState.partenza = pIdx >= 0 ? pIdx : 0;
+  buildStatPartenzaSelect();
+  statState.arrivo = aIdx > statState.partenza ? aIdx : statState.partenza + 1;
+  buildStatArrivoSelect();
+
+  document.getElementById("statInizio").value = parseDTForInput(rec.inizio);
+  document.getElementById("statFine").value = parseDTForInput(rec.fine);
+
+  editingRowId = rec.id;
+  document.getElementById("editBanner").style.display = "block";
+  document.getElementById("statCancelBtn").style.display = "block";
+  document.getElementById("statSaveBtn").textContent = "💾 Aggiorna rilevazione";
+  document.getElementById("statStatus").className = "stat-status";
+  document.getElementById("statStatus").textContent = "";
+
+  document.getElementById("tabStats").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function deleteRecord(id){
+  if (!confirm("Vuoi davvero eliminare questa rilevazione? L'operazione non è reversibile.")) return;
+  const container = document.getElementById("recList");
+  try {
+    const resp = await fetch(SHEET_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "delete", id: id })
+    });
+    const json = await resp.json();
+    if (json.result === "success") {
+      loadRecordsList();
+    } else {
+      alert("Errore durante l'eliminazione: " + (json.error || "sconosciuto"));
+    }
+  } catch (err) {
+    alert("Errore di connessione: " + err.message);
+  }
+}
+
+document.getElementById("statRefreshBtn").addEventListener("click", loadRecordsList);
+
+/* ============================================================
+   INIZIALIZZAZIONE
+   ============================================================ */
+
 updateClock();
 setInterval(updateClock, 30000);
 setInterval(() => { if (resultsShown) doSearch(false); }, 60000);
@@ -528,6 +1042,7 @@ Promise.all([
     buildLegend();
     rebuildControls();
     showInitialPlaceholder();
+    rebuildStatControls();
   })
   .catch(err => {
     document.getElementById("resultsTitle").textContent = "Errore nel caricamento dei dati.";
