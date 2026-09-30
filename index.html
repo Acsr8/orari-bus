@@ -40,26 +40,6 @@
   }
   header h1 { margin: 0; font-size: 1.25rem; font-weight: 700; }
   header p { margin: 2px 0 0; font-size: 0.8rem; opacity: 0.85; }
-  .maintabs {
-    display: flex;
-    gap: 8px;
-    margin-top: 14px;
-  }
-  .maintabs button {
-    flex: 1;
-    padding: 10px 6px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(255,255,255,0.4);
-    background: rgba(255,255,255,0.12);
-    color: white;
-    font-weight: 700;
-    font-size: 0.88rem;
-  }
-  .maintabs button.active {
-    background: white;
-    color: var(--blue-dark);
-    border-color: white;
-  }
   main { max-width: 640px; margin: 0 auto; padding: 14px; }
   .card {
     background: var(--card);
@@ -80,7 +60,7 @@
     margin-top: 12px;
   }
   label:first-child { margin-top: 0; }
-  select, input[type="datetime-local"] {
+  select {
     width: 100%;
     padding: 12px 10px;
     border-radius: 10px;
@@ -88,8 +68,6 @@
     font-size: 1rem;
     background: #fafbfc;
     color: var(--text);
-  }
-  select {
     appearance: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
     background-repeat: no-repeat;
@@ -119,7 +97,7 @@
     color: var(--text);
   }
   .dirbtns button.active { background: var(--blue-dark); color: white; border-color: var(--blue-dark); }
-  .searchbtn, .savebtn {
+  .searchbtn {
     margin-top: 16px;
     width: 100%;
     padding: 14px 10px;
@@ -131,7 +109,7 @@
     font-size: 1rem;
     box-shadow: 0 2px 6px rgba(11,95,255,0.35);
   }
-  .searchbtn:active, .savebtn:active { background: var(--blue-dark); }
+  .searchbtn:active { background: var(--blue-dark); }
   .geobtn {
     margin-top: 10px;
     width: 100%;
@@ -199,21 +177,6 @@
     margin-top: 10px;
     display: none;
   }
-  .stat-status {
-    font-size: 0.82rem;
-    margin-top: 10px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    display: none;
-  }
-  .stat-status.ok { background: #ecfdf3; color: #15803d; display: block; }
-  .stat-status.err { background: #fff1f2; color: #b91c1c; display: block; }
-  .stat-status.pending { background: #eef2ff; color: var(--blue-dark); display: block; }
-  .stat-intro {
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
 </style>
 </head>
 <body>
@@ -221,97 +184,54 @@
 <header>
   <h1>🚌 Orari Bus</h1>
   <p id="clock"></p>
-  <div class="maintabs">
-    <button id="tabOrariBtn" class="active" type="button">🔍 Orari</button>
-    <button id="tabStatsBtn" type="button">📊 Statistiche</button>
-  </div>
 </header>
 
 <main>
 
-  <!-- ===================== TAB 1: ORARI ===================== -->
-  <div id="tabOrari">
+  <div class="card">
+    <label>Linea</label>
+    <div class="linebtns" id="lineButtons"></div>
 
-    <div class="card">
-      <label>Linea</label>
-      <div class="linebtns" id="lineButtons"></div>
+    <label>Direzione</label>
+    <div class="dirbtns" id="dirButtons"></div>
 
-      <label>Direzione</label>
-      <div class="dirbtns" id="dirButtons"></div>
+    <label>Fermata</label>
+    <select id="stopSelect"></select>
 
-      <label>Fermata</label>
-      <select id="stopSelect"></select>
+    <label>Tipo di giorno</label>
+    <select id="dayTypeSelect">
+      <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
+      <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
+    </select>
 
-      <label>Tipo di giorno</label>
-      <select id="dayTypeSelect">
-        <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
-        <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
-      </select>
+    <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
+    <div class="pending-note" id="pendingNote">⚠️ Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
 
-      <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
-      <div class="pending-note" id="pendingNote">⚠️ Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
-
-      <button class="geobtn" id="geoBtn" type="button">📍 Trova fermata più vicina</button>
-      <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
-    </div>
-
-    <div class="card" id="resultsCard">
-      <div class="results-title" id="resultsTitle"></div>
-      <div class="placeholder" id="placeholderMsg">
-        👆 Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
-      </div>
-      <table class="times" id="resultsTable"></table>
-      <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
-    </div>
-
-    <div class="card">
-      <details>
-        <summary>Legenda cadenze e note</summary>
-        <div class="legend" id="legendBox" style="margin-top:8px;"></div>
-      </details>
-    </div>
-
-    <footer id="footerInfo"></footer>
+    <button class="geobtn" id="geoBtn" type="button">📍 Trova fermata più vicina</button>
+    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
   </div>
 
-  <!-- ===================== TAB 2: STATISTICHE ===================== -->
-  <div id="tabStats" style="display:none;">
-
-    <div class="card">
-      <div class="stat-intro">Registra una rilevazione reale di percorrenza. I dati vengono salvati nel tuo Google Sheet collegato.</div>
-
-      <label>Linea</label>
-      <select id="statLinea"></select>
-
-      <label>Direzione</label>
-      <select id="statDirezione"></select>
-
-      <label>Fermata di partenza</label>
-      <select id="statPartenza"></select>
-
-      <label>Fermata di arrivo</label>
-      <select id="statArrivo"></select>
-
-      <label>Data/ora inizio tratta</label>
-      <input type="datetime-local" id="statInizio">
-
-      <label>Data/ora fine tratta</label>
-      <input type="datetime-local" id="statFine">
-
-      <button class="savebtn" id="statSaveBtn" type="button">💾 Salva rilevazione</button>
-      <div class="stat-status" id="statStatus"></div>
+  <div class="card" id="resultsCard">
+    <div class="results-title" id="resultsTitle"></div>
+    <div class="placeholder" id="placeholderMsg">
+      👆 Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
     </div>
-
+    <table class="times" id="resultsTable"></table>
+    <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
   </div>
+
+  <div class="card">
+    <details>
+      <summary>Legenda cadenze e note</summary>
+      <div class="legend" id="legendBox" style="margin-top:8px;"></div>
+    </details>
+  </div>
+
+  <footer id="footerInfo"></footer>
 
 </main>
 
 <script>
-/* ============================================================
-   CONFIGURAZIONE
-   ============================================================ */
-const SHEET_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5cNdbRUY9H8DI5IMGGMgju3lVp3L8Cm9SI5k4K-GGOyxqcRquMHtwSUWkKmF0zdb4og/exec";
-
 let DATA = null;
 let COORDS = null;
 let resultsShown = false;
@@ -321,13 +241,6 @@ let state = {
   direzione: "andata",
   fermata: null,
   dayType: "fsc_feriale"
-};
-
-let statState = {
-  linea: null,
-  direzione: null,
-  partenza: 0,
-  arrivo: 1
 };
 
 const dayTypeMatch = {
@@ -388,27 +301,6 @@ function lineLabel(key){
   if (key === "101") return "101";
   return key;
 }
-
-/* ============================================================
-   TAB SWITCHING
-   ============================================================ */
-document.getElementById("tabOrariBtn").addEventListener("click", () => {
-  document.getElementById("tabOrariBtn").classList.add("active");
-  document.getElementById("tabStatsBtn").classList.remove("active");
-  document.getElementById("tabOrari").style.display = "block";
-  document.getElementById("tabStats").style.display = "none";
-});
-
-document.getElementById("tabStatsBtn").addEventListener("click", () => {
-  document.getElementById("tabStatsBtn").classList.add("active");
-  document.getElementById("tabOrariBtn").classList.remove("active");
-  document.getElementById("tabStats").style.display = "block";
-  document.getElementById("tabOrari").style.display = "none";
-});
-
-/* ============================================================
-   TAB 1: ORARI (ricerca)
-   ============================================================ */
 
 function buildLineButtons(){
   const container = document.getElementById("lineButtons");
@@ -620,184 +512,6 @@ document.getElementById("geoBtn").addEventListener("click", () => {
   );
 });
 
-/* ============================================================
-   TAB 2: STATISTICHE (inserimento dati verso Google Sheet)
-   ============================================================ */
-
-function buildStatLineaSelect(){
-  const sel = document.getElementById("statLinea");
-  sel.innerHTML = "";
-  Object.keys(DATA.linee).forEach(key => {
-    const opt = document.createElement("option");
-    opt.value = key;
-    opt.textContent = lineLabel(key) + " - " + DATA.linee[key].nome;
-    sel.appendChild(opt);
-  });
-  if (!statState.linea || !DATA.linee[statState.linea]) {
-    statState.linea = Object.keys(DATA.linee)[0];
-  }
-  sel.value = statState.linea;
-}
-
-function buildStatDirezioneSelect(){
-  const sel = document.getElementById("statDirezione");
-  sel.innerHTML = "";
-  const linea = DATA.linee[statState.linea];
-  Object.keys(linea.direzioni).forEach(key => {
-    const opt = document.createElement("option");
-    opt.value = key;
-    opt.textContent = linea.direzioni[key].titolo;
-    sel.appendChild(opt);
-  });
-  if (!statState.direzione || !linea.direzioni[statState.direzione]) {
-    statState.direzione = Object.keys(linea.direzioni)[0];
-  }
-  sel.value = statState.direzione;
-}
-
-function buildStatPartenzaSelect(){
-  const sel = document.getElementById("statPartenza");
-  sel.innerHTML = "";
-  const dir = DATA.linee[statState.linea].direzioni[statState.direzione];
-  dir.fermate.forEach((f, idx) => {
-    if (idx === dir.fermate.length - 1) return; // l'ultima fermata non può essere partenza
-    const opt = document.createElement("option");
-    opt.value = idx;
-    opt.textContent = f;
-    sel.appendChild(opt);
-  });
-  if (statState.partenza >= dir.fermate.length - 1) {
-    statState.partenza = 0;
-  }
-  sel.value = statState.partenza;
-}
-
-function buildStatArrivoSelect(){
-  const sel = document.getElementById("statArrivo");
-  sel.innerHTML = "";
-  const dir = DATA.linee[statState.linea].direzioni[statState.direzione];
-  dir.fermate.forEach((f, idx) => {
-    if (idx <= statState.partenza) return; // solo fermate successive
-    const opt = document.createElement("option");
-    opt.value = idx;
-    opt.textContent = f;
-    sel.appendChild(opt);
-  });
-  if (statState.arrivo <= statState.partenza || statState.arrivo >= dir.fermate.length) {
-    statState.arrivo = statState.partenza + 1;
-  }
-  sel.value = statState.arrivo;
-}
-
-function rebuildStatControls(){
-  buildStatLineaSelect();
-  buildStatDirezioneSelect();
-  buildStatPartenzaSelect();
-  buildStatArrivoSelect();
-}
-
-document.getElementById("statLinea").addEventListener("change", (e) => {
-  statState.linea = e.target.value;
-  statState.direzione = null;
-  statState.partenza = 0;
-  statState.arrivo = 1;
-  buildStatDirezioneSelect();
-  buildStatPartenzaSelect();
-  buildStatArrivoSelect();
-});
-
-document.getElementById("statDirezione").addEventListener("change", (e) => {
-  statState.direzione = e.target.value;
-  statState.partenza = 0;
-  statState.arrivo = 1;
-  buildStatPartenzaSelect();
-  buildStatArrivoSelect();
-});
-
-document.getElementById("statPartenza").addEventListener("change", (e) => {
-  statState.partenza = parseInt(e.target.value, 10);
-  buildStatArrivoSelect();
-});
-
-document.getElementById("statArrivo").addEventListener("change", (e) => {
-  statState.arrivo = parseInt(e.target.value, 10);
-});
-
-/* Prepopolazione automatica data/ora corrente al primo click, se il campo è vuoto */
-function nowLocalISOString(){
-  const d = new Date();
-  const tzOffset = d.getTimezoneOffset() * 60000;
-  return new Date(d - tzOffset).toISOString().slice(0,16);
-}
-
-function attachAutoNow(inputId){
-  const el = document.getElementById(inputId);
-  const fill = () => { if (!el.value) el.value = nowLocalISOString(); };
-  el.addEventListener("focus", fill);
-  el.addEventListener("click", fill);
-}
-
-attachAutoNow("statInizio");
-attachAutoNow("statFine");
-
-function formatDT(value){
-  if (!value) return "";
-  const [datePart, timePart] = value.split("T");
-  return datePart + " " + timePart;
-}
-
-document.getElementById("statSaveBtn").addEventListener("click", async () => {
-  const statusEl = document.getElementById("statStatus");
-  const inizio = document.getElementById("statInizio").value;
-  const fine = document.getElementById("statFine").value;
-
-  if (!inizio || !fine) {
-    statusEl.className = "stat-status err";
-    statusEl.textContent = "⚠️ Inserisci sia l'orario di inizio che di fine tratta.";
-    return;
-  }
-
-  const linea = DATA.linee[statState.linea];
-  const dir = linea.direzioni[statState.direzione];
-  const partenza = dir.fermate[statState.partenza];
-  const arrivo = dir.fermate[statState.arrivo];
-
-  statusEl.className = "stat-status pending";
-  statusEl.textContent = "💾 Salvataggio in corso...";
-
-  try {
-    const resp = await fetch(SHEET_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        linea: lineLabel(statState.linea),
-        direzione: dir.titolo,
-        partenza: partenza,
-        arrivo: arrivo,
-        inizio: formatDT(inizio),
-        fine: formatDT(fine)
-      })
-    });
-    const json = await resp.json();
-    if (json.result === "success") {
-      statusEl.className = "stat-status ok";
-      statusEl.textContent = "✅ Rilevazione salvata correttamente (riga " + json.row + ").";
-      document.getElementById("statInizio").value = "";
-      document.getElementById("statFine").value = "";
-    } else {
-      statusEl.className = "stat-status err";
-      statusEl.textContent = "⚠️ Errore durante il salvataggio: " + (json.error || "sconosciuto");
-    }
-  } catch (err) {
-    statusEl.className = "stat-status err";
-    statusEl.textContent = "⚠️ Errore di connessione: " + err.message;
-  }
-});
-
-/* ============================================================
-   INIZIALIZZAZIONE
-   ============================================================ */
-
 updateClock();
 setInterval(updateClock, 30000);
 setInterval(() => { if (resultsShown) doSearch(false); }, 60000);
@@ -814,7 +528,6 @@ Promise.all([
     buildLegend();
     rebuildControls();
     showInitialPlaceholder();
-    rebuildStatControls();
   })
   .catch(err => {
     document.getElementById("resultsTitle").textContent = "Errore nel caricamento dei dati.";
