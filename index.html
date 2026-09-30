@@ -294,11 +294,8 @@
     <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:4px;text-align:center;"></div>
   </div>
 
-  <div class="card" id="resultsCard">
+  <div class="card" id="resultsCard" hidden>
     <div class="results-title" id="resultsTitle"></div>
-    <div class="placeholder" id="placeholderMsg">
-      Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
-    </div>
     <table class="times" id="resultsTable"></table>
     <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
   </div>
@@ -508,7 +505,7 @@ function showInitialPlaceholder(){
   resultsShown = false;
   clearPending();
   document.getElementById("resultsTitle").textContent = "";
-  document.getElementById("placeholderMsg").style.display = "block";
+  document.getElementById("resultsCard").hidden = true;
   document.getElementById("emptyMsg").style.display = "none";
   document.getElementById("resultsTable").innerHTML = "";
 }
@@ -520,7 +517,7 @@ function doSearch(scrollToNext){
   const validCadenze = dayTypeMatch[state.dayType];
 
   clearPending();
-  document.getElementById("placeholderMsg").style.display = "none";
+  document.getElementById("resultsCard").hidden = false;
   document.getElementById("resultsTitle").innerHTML =
     stopName + "<br><span>" + DATA.linee[state.linea].nome + " · " + dir.titolo + "</span>";
 
