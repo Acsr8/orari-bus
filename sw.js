@@ -1,4 +1,4 @@
-const CACHE_NAME = "orari-bus-v7";
+const CACHE_NAME = "orari-bus-v9";
 const FILES_TO_CACHE = [
   "./index.html",
   "./data.json",
@@ -27,6 +27,8 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  // solo file dell'app: le chiamate al foglio (altro dominio, POST) vanno sempre in rete
+  if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const network = fetch(event.request)

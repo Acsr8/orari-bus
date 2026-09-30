@@ -205,6 +205,61 @@
     margin-top: 12px;
     display: none;
   }
+
+  /* ---------- Navigazione e pagina Statistiche ---------- */
+  body { padding-bottom: calc(env(safe-area-inset-bottom) + 96px); }
+  [hidden] { display: none !important; }
+  nav.tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    display: flex; justify-content: center; gap: 8px;
+    padding: 10px 16px calc(env(safe-area-inset-bottom) + 10px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+  }
+  nav.tabbar button {
+    flex: 1; max-width: 300px; padding: 11px 6px; border: none; border-radius: 12px;
+    background: transparent; color: var(--muted);
+    font-family: inherit; font-weight: 600; font-size: 0.9rem;
+  }
+  nav.tabbar button.active { background: var(--fill); color: var(--ink); }
+  input[type="datetime-local"] {
+    width: 100%; min-height: 48px; padding: 12px 14px; border-radius: 12px; border: none;
+    font-size: 1rem; font-family: inherit; background-color: var(--fill); color: var(--ink);
+    -webkit-appearance: none; appearance: none;
+  }
+  select:disabled { opacity: 0.45; }
+  .form-hint { font-size: 0.78rem; color: var(--muted); margin-top: 10px; min-height: 1.2em; }
+  .form-msg { font-size: 0.8rem; margin-top: 12px; padding: 9px 12px; border-radius: 10px; display: none; }
+  .form-msg.err { display: block; color: var(--warn); background: var(--warn-soft); }
+  .form-msg.ok { display: block; color: var(--accent); background: var(--accent-soft); }
+  .editing-bar { display: none; align-items: center; justify-content: space-between;
+    font-size: 0.8rem; font-weight: 600; color: var(--accent); background: var(--accent-soft);
+    border-radius: 10px; padding: 9px 12px; margin-bottom: 14px; }
+  .editing-bar.on { display: flex; }
+  .editing-bar button { border: none; background: none; color: var(--accent); font: inherit; font-weight: 700; }
+  .route { display: block; width: 100%; text-align: left; padding: 12px 14px; margin-bottom: 8px; border-radius: 14px;
+    border: 1.5px solid transparent; background: var(--fill); color: var(--ink); font-family: inherit; }
+  .route:last-child { margin-bottom: 0; }
+  .route.active { border-color: var(--accent); background: var(--accent-soft); }
+  .route-name { font-weight: 600; font-size: 0.9rem; line-height: 1.3; }
+  .route-name small { color: var(--muted); font-weight: 600; font-size: 0.72rem; margin-right: 4px; }
+  .route-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; font-size: 0.74rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .route-stats b { display: block; white-space: nowrap; color: var(--ink); font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+  .route-stats .avg b { color: var(--accent); }
+  .filter-chip { display: none; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 999px; padding: 6px 12px; margin-bottom: 8px; border: none; font-family: inherit; }
+  .filter-chip.on { display: inline-flex; }
+  .results-title-row { display: flex; align-items: baseline; justify-content: space-between; }
+  .rec { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .rec:last-child { border-bottom: none; }
+  .rec-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .rec-route { font-weight: 600; font-size: 0.95rem; line-height: 1.3; }
+  .rec-dur { font-weight: 700; font-size: 1.05rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .rec-meta { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  .rec-actions { display: flex; gap: 16px; margin-top: 8px; }
+  .rec-actions button { border: none; background: none; padding: 4px 0; font: inherit; font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .rec-actions button.del { color: var(--warn); }
 </style>
 </head>
 <body>
@@ -214,7 +269,7 @@
   <p id="clock"></p>
 </header>
 
-<main>
+<main id="view-orari">
 
   <div class="card">
     <label>Linea</label>
@@ -258,6 +313,52 @@
   <footer id="footerInfo"></footer>
 
 </main>
+
+<main id="view-stats" hidden>
+
+  <div class="card" id="formCard">
+    <div class="editing-bar" id="editingBar"><span>Modifica rilevazione</span><button type="button" id="cancelEditBtn">Annulla</button></div>
+
+    <label>Linea</label>
+    <div class="linebtns" id="sLineButtons"></div>
+
+    <label>Direzione</label>
+    <div class="dirbtns" id="sDirButtons"></div>
+
+    <label>Fermata di partenza</label>
+    <select id="sFrom"></select>
+
+    <label>Fermata di arrivo</label>
+    <select id="sTo"></select>
+
+    <label>Ora di partenza</label>
+    <input type="datetime-local" id="sDepart" step="60">
+
+    <label>Ora di arrivo</label>
+    <input type="datetime-local" id="sArrive" step="60">
+
+    <div class="form-hint" id="sDuration"></div>
+    <button class="searchbtn" id="sSaveBtn" type="button">Salva rilevazione</button>
+    <div class="form-msg" id="sMsg"></div>
+  </div>
+
+  <div class="card">
+    <div class="results-title">Riepilogo per tratta</div>
+    <div id="sRoutes"><div class="placeholder">Caricamento…</div></div>
+  </div>
+
+  <div class="card">
+    <div class="results-title">Rilevazioni</div>
+    <button type="button" class="filter-chip" id="filterChip"></button>
+    <div id="sList"><div class="placeholder">Caricamento…</div></div>
+  </div>
+
+</main>
+
+<nav class="tabbar">
+  <button type="button" id="tabOrari" class="active">Orari</button>
+  <button type="button" id="tabStats">Statistiche</button>
+</nav>
 
 <script>
 let DATA = null;
@@ -556,11 +657,339 @@ Promise.all([
     buildLegend();
     rebuildControls();
     showInitialPlaceholder();
+    initStats();
   })
   .catch(err => {
     document.getElementById("resultsTitle").textContent = "Errore nel caricamento dei dati.";
     console.error(err);
   });
+
+/* ---------- Pagina Statistiche ---------- */
+const STATS_URL = "https://script.google.com/macros/s/AKfycbybgT3SDsz-C3DNHHBeEhMTXM20fj85v9HQvb4Ms4JOustedm9hpoSPUEjSsYuoB-yFIQ/exec";
+const STATS_KEY = "BUS";
+
+const S = { linea: "E037", direzione: "andata", from: 0, records: [], editingId: null, busy: false, filter: null };
+const $ = (id) => document.getElementById(id);
+
+function showView(name){
+  const stats = name === "stats";
+  $("view-orari").hidden = stats;
+  $("view-stats").hidden = !stats;
+  $("tabOrari").classList.toggle("active", !stats);
+  $("tabStats").classList.toggle("active", stats);
+  document.querySelector("header h1").textContent = stats ? "Statistiche" : "Orari Bus";
+  try { history.replaceState(null, "", stats ? "#statistiche" : "#"); } catch (e) {}
+  if (stats) { loadRecords(); window.scrollTo(0, 0); }
+}
+
+function nowLocal(){
+  const d = new Date();
+  return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+const toSheet = (v) => v.replace("T", " ");
+const fromSheet = (v) => String(v).replace(" ", "T");
+
+function diffMinutes(a, b){
+  if (!a || !b) return null;
+  const t = (s) => { const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s); return m ? Date.UTC(+m[1], +m[2]-1, +m[3], +m[4], +m[5]) / 60000 : NaN; };
+  const r = t(b) - t(a);
+  return isNaN(r) ? null : r;
+}
+
+function fmtDur(min){
+  if (min === null || min === undefined || isNaN(min)) return "–";
+  min = Math.round(min);
+  if (min < 60) return min + " min";
+  return Math.floor(min / 60) + " h " + pad(min % 60) + " min";
+}
+
+function sDir(){ return DATA.linee[S.linea].direzioni[S.direzione]; }
+
+function buildStatsControls(){
+  const lb = $("sLineButtons");
+  lb.innerHTML = "";
+  Object.keys(DATA.linee).forEach(key => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = lineLabel(key);
+    b.className = S.linea === key ? "active" : "";
+    b.onclick = () => { S.linea = key; S.direzione = "andata"; S.from = 0; buildStatsControls(); };
+    lb.appendChild(b);
+  });
+
+  const db = $("sDirButtons");
+  db.innerHTML = "";
+  Object.keys(DATA.linee[S.linea].direzioni).forEach(key => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = DATA.linee[S.linea].direzioni[key].titolo;
+    b.className = S.direzione === key ? "active" : "";
+    b.onclick = () => { S.direzione = key; S.from = 0; buildStatsControls(); };
+    db.appendChild(b);
+  });
+
+  buildFromSelect();
+}
+
+function buildFromSelect(keepTo){
+  const fermate = sDir().fermate;
+  const sel = $("sFrom");
+  sel.innerHTML = "";
+  // l'ultima fermata non può essere una partenza: dopo non c'è nulla
+  fermate.slice(0, -1).forEach((f, i) => {
+    const o = document.createElement("option");
+    o.value = i; o.textContent = f; sel.appendChild(o);
+  });
+  if (S.from >= fermate.length - 1) S.from = 0;
+  sel.value = S.from;
+  buildToSelect(keepTo);
+}
+
+function buildToSelect(keepName){
+  const fermate = sDir().fermate;
+  const sel = $("sTo");
+  sel.innerHTML = "";
+  for (let i = S.from + 1; i < fermate.length; i++) {
+    const o = document.createElement("option");
+    o.value = fermate[i]; o.textContent = fermate[i]; sel.appendChild(o);
+  }
+  if (keepName && fermate.indexOf(keepName) > S.from) sel.value = keepName;
+}
+
+function updateDuration(){
+  const m = diffMinutes($("sDepart").value, $("sArrive").value);
+  $("sDuration").textContent = m === null ? "" : (m < 0 ? "L'arrivo è prima della partenza." : "Durata: " + fmtDur(m));
+}
+
+function setMsg(text, kind){
+  const el = $("sMsg");
+  el.textContent = text || "";
+  el.className = "form-msg" + (text ? " " + kind : "");
+}
+
+function fillNowIfEmpty(input){
+  if (!input.value) { input.value = nowLocal(); updateDuration(); }
+}
+
+function resetForm(){
+  S.editingId = null;
+  $("editingBar").classList.remove("on");
+  $("sSaveBtn").textContent = "Salva rilevazione";
+  $("sDepart").value = "";
+  $("sArrive").value = "";
+  updateDuration();
+}
+
+async function api(method, payload){
+  const opts = method === "GET" ? {} : {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },   // evita il preflight CORS
+    body: JSON.stringify(Object.assign({ key: STATS_KEY }, payload))
+  };
+  const url = method === "GET" ? STATS_URL + "?action=list&key=" + encodeURIComponent(STATS_KEY) : STATS_URL;
+  const res = await fetch(url, opts);
+  const json = await res.json();
+  if (json.result !== "success") throw new Error(json.error || "Errore sconosciuto");
+  return json;
+}
+
+async function loadRecords(){
+  try {
+    const json = await api("GET");
+    S.records = json.records;
+    renderRecords();
+  } catch (e) {
+    $("sRoutes").innerHTML = "";
+    $("sList").innerHTML = "<div class='empty'>Impossibile caricare le rilevazioni.<br>" + (e.message || "") + "</div>";
+  }
+}
+
+function fmtDay(v){
+  const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})/.exec(v);
+  if (!m) return v;
+  const mesi = ["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+  return (+m[3]) + " " + mesi[+m[2]-1] + " · " + m[4];
+}
+
+const routeKey = (r) => r.linea + "|" + r.partenza + "|" + r.arrivo;
+
+function renderRoutes(recs){
+  // la media ha senso solo sulla stessa tratta: stessa linea, stessa partenza, stesso arrivo
+  const groups = {};
+  recs.forEach(r => {
+    const n = Number(r.minuti);
+    if (isNaN(n)) return;
+    (groups[routeKey(r)] = groups[routeKey(r)] || { linea: r.linea, partenza: r.partenza, arrivo: r.arrivo, mins: [] }).mins.push(n);
+  });
+  const box = $("sRoutes");
+  const list = Object.keys(groups).map(k => ({ key: k, g: groups[k] })).sort((a, b) => b.g.mins.length - a.g.mins.length);
+  if (!list.length) { box.innerHTML = "<div class='placeholder'>Nessuna tratta rilevata.</div>"; return; }
+  box.innerHTML = "";
+  list.forEach(({ key, g }) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "route" + (S.filter === key ? " active" : "");
+    const name = document.createElement("div");
+    name.className = "route-name";
+    const small = document.createElement("small");
+    small.textContent = g.linea;
+    name.appendChild(small);
+    name.appendChild(document.createTextNode(g.partenza + " → " + g.arrivo));
+    const st = document.createElement("div");
+    st.className = "route-stats";
+    const avg = g.mins.reduce((x, y) => x + y, 0) / g.mins.length;
+    [["avg", "Media", fmtDur(avg)], ["", "Min", fmtDur(Math.min(...g.mins))], ["", "Max", fmtDur(Math.max(...g.mins))], ["", "Rilev.", g.mins.length]]
+      .forEach(([cls, cap, val]) => {
+        const c = document.createElement("div");
+        if (cls) c.className = cls;
+        const v = document.createElement("b");
+        v.textContent = val;
+        c.appendChild(v);
+        c.appendChild(document.createTextNode(cap));
+        st.appendChild(c);
+      });
+    b.appendChild(name); b.appendChild(st);
+    b.onclick = () => { S.filter = S.filter === key ? null : key; renderRecords(); };
+    box.appendChild(b);
+  });
+}
+
+function renderRecords(){
+  const list = $("sList");
+  const all = S.records.slice().sort((a, b) => String(b.partenza_ora).localeCompare(String(a.partenza_ora)));
+  if (S.filter && !all.some(r => routeKey(r) === S.filter)) S.filter = null;   // tratta non più presente
+  renderRoutes(all);
+
+  const chip = $("filterChip");
+  const recs = S.filter ? all.filter(r => routeKey(r) === S.filter) : all;
+  if (S.filter) {
+    const f = recs[0];
+    chip.textContent = f.linea + " · " + f.partenza + " → " + f.arrivo + "  ✕";
+    chip.classList.add("on");
+  } else {
+    chip.classList.remove("on");
+  }
+  chip.onclick = () => { S.filter = null; renderRecords(); };
+
+  if (!recs.length) { list.innerHTML = "<div class='placeholder'>Nessuna rilevazione. Inserisci la prima qui sopra.</div>"; return; }
+  list.innerHTML = "";
+  recs.forEach(r => {
+    const d = document.createElement("div");
+    d.className = "rec";
+    const top = document.createElement("div");
+    top.className = "rec-top";
+    const route = document.createElement("div");
+    route.className = "rec-route";
+    route.textContent = r.partenza + " → " + r.arrivo;
+    const dur = document.createElement("div");
+    dur.className = "rec-dur";
+    dur.textContent = fmtDur(Number(r.minuti));
+    top.appendChild(route); top.appendChild(dur);
+    const meta = document.createElement("div");
+    meta.className = "rec-meta";
+    meta.textContent = "Linea " + r.linea + " · " + fmtDay(r.partenza_ora) + " → " + String(r.arrivo_ora).slice(11, 16);
+    const act = document.createElement("div");
+    act.className = "rec-actions";
+    const be = document.createElement("button");
+    be.type = "button"; be.textContent = "Modifica"; be.onclick = () => startEdit(r);
+    const bd = document.createElement("button");
+    bd.type = "button"; bd.className = "del"; bd.textContent = "Elimina"; bd.onclick = () => removeRecord(r);
+    act.appendChild(be); act.appendChild(bd);
+    d.appendChild(top); d.appendChild(meta); d.appendChild(act);
+    list.appendChild(d);
+  });
+}
+
+function startEdit(r){
+  // la direzione non è nel foglio: la ricavo dalle fermate (partenza prima dell'arrivo)
+  const linea = DATA.linee[r.linea];
+  let dirKey = null;
+  if (linea) {
+    Object.keys(linea.direzioni).forEach(k => {
+      const f = linea.direzioni[k].fermate;
+      const a = f.indexOf(r.partenza), b = f.indexOf(r.arrivo);
+      if (a !== -1 && b > a && !dirKey) dirKey = k;
+    });
+  }
+  if (!dirKey) { setMsg("Questa rilevazione usa fermate non più presenti negli orari: non è modificabile.", "err"); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  S.linea = r.linea; S.direzione = dirKey;
+  S.from = linea.direzioni[dirKey].fermate.indexOf(r.partenza);
+  S.editingId = r.id;
+  buildStatsControls();
+  buildToSelect(r.arrivo);
+  $("sDepart").value = fromSheet(r.partenza_ora);
+  $("sArrive").value = fromSheet(r.arrivo_ora);
+  $("editingBar").classList.add("on");
+  $("sSaveBtn").textContent = "Salva modifiche";
+  setMsg("");
+  updateDuration();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function saveRecord(){
+  if (S.busy) return;
+  const fermate = sDir().fermate;
+  const dep = $("sDepart").value, arr = $("sArrive").value;
+  const to = $("sTo").value;
+  if (!to) { setMsg("Scegli una fermata di arrivo.", "err"); return; }
+  if (!dep || !arr) { setMsg("Inserisci ora di partenza e di arrivo.", "err"); return; }
+  const m = diffMinutes(dep, arr);
+  if (m === null || m < 0) { setMsg("L'arrivo non può essere prima della partenza.", "err"); return; }
+
+  const payload = {
+    action: S.editingId ? "update" : "create",
+    id: S.editingId,
+    linea: S.linea,
+    partenza: fermate[S.from],
+    arrivo: to,
+    partenza_ora: toSheet(dep),
+    arrivo_ora: toSheet(arr)
+  };
+  S.busy = true;
+  const btn = $("sSaveBtn"), label = btn.textContent;
+  btn.textContent = "Salvataggio…"; btn.disabled = true;
+  setMsg("");
+  try {
+    await api("POST", payload);
+    const wasEdit = !!S.editingId;
+    resetForm();
+    setMsg(wasEdit ? "Modifiche salvate." : "Rilevazione salvata.", "ok");
+    await loadRecords();
+  } catch (e) {
+    btn.textContent = label;
+    setMsg("Salvataggio non riuscito: " + e.message, "err");
+  } finally {
+    S.busy = false; btn.disabled = false;
+    if (!S.editingId) btn.textContent = "Salva rilevazione";
+  }
+}
+
+async function removeRecord(r){
+  if (!confirm("Eliminare la rilevazione " + r.partenza + " → " + r.arrivo + " del " + fmtDay(r.partenza_ora) + "?")) return;
+  try {
+    await api("POST", { action: "delete", id: r.id });
+    if (S.editingId === r.id) resetForm();
+    setMsg("Rilevazione eliminata.", "ok");
+    await loadRecords();
+  } catch (e) {
+    setMsg("Eliminazione non riuscita: " + e.message, "err");
+  }
+}
+
+function initStats(){
+  buildStatsControls();
+  $("sFrom").addEventListener("change", (e) => { S.from = parseInt(e.target.value, 10); buildToSelect(); });
+  $("sDepart").addEventListener("focus", () => fillNowIfEmpty($("sDepart")));
+  $("sArrive").addEventListener("focus", () => fillNowIfEmpty($("sArrive")));
+  $("sDepart").addEventListener("input", updateDuration);
+  $("sArrive").addEventListener("input", updateDuration);
+  $("sSaveBtn").addEventListener("click", saveRecord);
+  $("cancelEditBtn").addEventListener("click", () => { resetForm(); setMsg(""); });
+  if (location.hash === "#statistiche") showView("stats");
+}
+
+$("tabOrari").addEventListener("click", () => showView("orari"));
+$("tabStats").addEventListener("click", () => showView("stats"));
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

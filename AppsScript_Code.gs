@@ -1,147 +1,111 @@
 /* ============================================================
-   API Statistiche Bus — Google Apps Script
-   Gestisce: creazione (create), lettura elenco (list),
-             aggiornamento (update), eliminazione (delete)
-   ============================================================
-   Colonne del foglio "Foglio1":
-   A: Linea | B: Direzione | C: Fermata Partenza | D: Fermata Arrivo
-   E: Inizio Tratta | F: Fine Tratta | G: Minuti | H: ID (nascosto)
+   API Statistiche Bus - Google Apps Script
+   Colonne del primo foglio:
+   A: ID | B: Linea | C: Fermata Partenza | D: Fermata Arrivo
+   E: Ora Partenza | F: Ora Arrivo | G: Minuti
+   Le date sono testo nel formato AAAA-MM-GG HH:MM.
+   I minuti sono calcolati qui: Ora Arrivo - Ora Partenza.
    ============================================================ */
 
-const SHEET_NAME = "Foglio1";
+const SECRET = "BUS";
+const COLS = 7;
 
 function getSheet() {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  return SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
 }
 
 function doGet(e) {
-  const action = e.parameter.action;
-  if (action === "list") {
-    return listRecords();
-  }
-  return jsonResponse({ result: "error", error: "Azione GET non riconosciuta." });
+  if (e.parameter.key !== SECRET) return json({ result: "error", error: "Chiave non valida." });
+  if (e.parameter.action === "list") return listRecords();
+  return json({ result: "error", error: "Azione non riconosciuta." });
 }
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
-  lock.tryLock(10000);
-
+  lock.waitLock(10000);
   try {
     const data = JSON.parse(e.postData.contents);
-    const action = data.action || "create";
-
-    if (action === "create") {
-      return createRecord(data);
-    } else if (action === "update") {
-      return updateRecord(data);
-    } else if (action === "delete") {
-      return deleteRecord(data);
-    } else {
-      return jsonResponse({ result: "error", error: "Azione non riconosciuta: " + action });
-    }
+    if (data.key !== SECRET) return json({ result: "error", error: "Chiave non valida." });
+    if (data.action === "create") return createRecord(data);
+    if (data.action === "update") return updateRecord(data);
+    if (data.action === "delete") return deleteRecord(data);
+    return json({ result: "error", error: "Azione non riconosciuta." });
   } catch (err) {
-    return jsonResponse({ result: "error", error: err.toString() });
+    return json({ result: "error", error: String(err) });
   } finally {
     lock.releaseLock();
   }
 }
 
-function createRecord(data) {
-  const sheet = getSheet();
-  const nextRow = sheet.getLastRow() + 1;
-  const id = Utilities.getUuid();
+// "2026-09-30 18:45" -> minuti dall'epoca, senza fuso orario (evita errori di ora legale)
+function toMinutes(text) {
+  const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(String(text).trim());
+  if (!m) throw new Error("Formato data/ora non valido: " + text);
+  return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) / 60000;
+}
 
-  sheet.getRange(nextRow, 1, 1, 8).setValues([[
-    data.linea,
-    data.direzione,
-    data.partenza,
-    data.arrivo,
-    data.inizio,
-    data.fine,
-    data.minuti,
-    id
-  ]]);
+function buildRow(id, d) {
+  const minuti = toMinutes(d.arrivo_ora) - toMinutes(d.partenza_ora);
+  if (minuti < 0) throw new Error("L'arrivo è prima della partenza.");
+  if (!d.linea || !d.partenza || !d.arrivo) throw new Error("Campi obbligatori mancanti.");
+  return [id, d.linea, d.partenza, d.arrivo, d.partenza_ora, d.arrivo_ora, minuti];
+}
 
-  return jsonResponse({ result: "success", row: nextRow, id: id });
+function writeRow(sheet, row, values) {
+  sheet.getRange(row, 5, 1, 2).setNumberFormat("@"); // testo: Sheets non converte in data
+  sheet.getRange(row, 1, 1, COLS).setValues([values]);
 }
 
 function findRowById(sheet, id) {
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return -1;
-  const ids = sheet.getRange(2, 8, lastRow - 1, 1).getValues();
-  for (let i = 0; i < ids.length; i++) {
-    if (ids[i][0] === id) {
-      return i + 2; // +2 perché getRange parte da riga 2 e gli indici sono 0-based
-    }
-  }
+  const last = sheet.getLastRow();
+  if (last < 2) return -1;
+  const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) if (ids[i][0] === id) return i + 2;
   return -1;
 }
 
-function updateRecord(data) {
+function createRecord(d) {
   const sheet = getSheet();
-  const row = findRowById(sheet, data.id);
-  if (row === -1) {
-    return jsonResponse({ result: "error", error: "Rilevazione non trovata (id: " + data.id + ")." });
-  }
-
-  sheet.getRange(row, 1, 1, 7).setValues([[
-    data.linea,
-    data.direzione,
-    data.partenza,
-    data.arrivo,
-    data.inizio,
-    data.fine,
-    data.minuti
-  ]]);
-
-  return jsonResponse({ result: "success", row: row });
+  const id = Utilities.getUuid();
+  const values = buildRow(id, d);
+  writeRow(sheet, sheet.getLastRow() + 1, values);
+  return json({ result: "success", id: id });
 }
 
-function deleteRecord(data) {
+function updateRecord(d) {
   const sheet = getSheet();
-  const row = findRowById(sheet, data.id);
-  if (row === -1) {
-    return jsonResponse({ result: "error", error: "Rilevazione non trovata (id: " + data.id + ")." });
-  }
+  const row = findRowById(sheet, d.id);
+  if (row === -1) return json({ result: "error", error: "Rilevazione non trovata." });
+  writeRow(sheet, row, buildRow(d.id, d));
+  return json({ result: "success" });
+}
 
+function deleteRecord(d) {
+  const sheet = getSheet();
+  const row = findRowById(sheet, d.id);
+  if (row === -1) return json({ result: "error", error: "Rilevazione non trovata." });
   sheet.deleteRow(row);
-  return jsonResponse({ result: "success" });
+  return json({ result: "success" });
 }
 
 function listRecords() {
   const sheet = getSheet();
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) {
-    return jsonResponse({ result: "success", records: [] });
-  }
-
-  const values = sheet.getRange(2, 1, lastRow - 1, 8).getValues();
-  const records = values
-    .filter(row => row[7]) // scarta righe senza ID (es. righe vuote residue)
-    .map(row => ({
-      linea: row[0],
-      direzione: row[1],
-      partenza: row[2],
-      arrivo: row[3],
-      inizio: formatCellValue(row[4]),
-      fine: formatCellValue(row[5]),
-      minuti: row[6],
-      id: row[7]
+  const last = sheet.getLastRow();
+  if (last < 2) return json({ result: "success", records: [] });
+  const records = sheet.getRange(2, 1, last - 1, COLS).getValues()
+    .filter(r => r[0])
+    .map(r => ({
+      id: r[0], linea: r[1], partenza: r[2], arrivo: r[3],
+      partenza_ora: cellText(r[4]), arrivo_ora: cellText(r[5]), minuti: r[6]
     }));
-
-  return jsonResponse({ result: "success", records: records });
+  return json({ result: "success", records: records });
 }
 
-function formatCellValue(value) {
-  // Se Google Sheets ha convertito la stringa in un oggetto Date, riformatta come testo
-  if (value instanceof Date) {
-    return Utilities.formatDate(value, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm");
-  }
-  return value;
+function cellText(v) {
+  if (v instanceof Date) return Utilities.formatDate(v, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm");
+  return v;
 }
 
-function jsonResponse(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
