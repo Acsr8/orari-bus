@@ -5,176 +5,204 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orari Bus</title>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0b5fff">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Orari Bus">
 <style>
   :root {
-    --blue: #0b5fff;
-    --blue-dark: #0846c4;
-    --bg: #f4f6fa;
-    --card: #ffffff;
-    --text: #1a1d29;
-    --muted: #6b7280;
-    --green: #16a34a;
-    --border: #e5e7eb;
+    color-scheme: light dark;
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --ink: #111111;
+    --muted: #737373;
+    --line: #ececec;
+    --fill: #f3f3f3;
+    --accent: #2563eb;
+    --accent-soft: #eff4ff;
+    --warn: #b45309;
+    --warn-soft: #fef6e7;
   }
-  * { box-sizing: border-box; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b0b0c;
+      --surface: #151517;
+      --ink: #f2f2f3;
+      --muted: #8d8d93;
+      --line: #242428;
+      --fill: #1e1e21;
+      --accent: #6b9bff;
+      --accent-soft: #16203a;
+      --warn: #f0b35a;
+      --warn-soft: #2a2114;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
-    color: var(--text);
-    padding-bottom: 40px;
+    color: var(--ink);
+    padding-bottom: 48px;
+    -webkit-font-smoothing: antialiased;
   }
   header {
-    background: var(--blue);
-    color: white;
-    padding: 18px 16px 16px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: calc(env(safe-area-inset-top) + 28px) 20px 8px;
+    max-width: 640px;
+    margin: 0 auto;
   }
-  header h1 { margin: 0; font-size: 1.25rem; font-weight: 700; }
-  header p { margin: 2px 0 0; font-size: 0.8rem; opacity: 0.85; }
-  main { max-width: 640px; margin: 0 auto; padding: 14px; }
+  header h1 { margin: 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; }
+  header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); text-transform: capitalize; }
+  main { max-width: 640px; margin: 0 auto; padding: 12px 16px; }
   .card {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 14px;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 20px;
     margin-bottom: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    border: 1px solid var(--border);
+    border: 1px solid var(--line);
   }
   label {
     display: block;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    margin-bottom: 6px;
-    margin-top: 12px;
+    letter-spacing: 0.08em;
+    margin: 18px 0 8px;
   }
   label:first-child { margin-top: 0; }
   select {
     width: 100%;
-    padding: 12px 10px;
-    border-radius: 10px;
-    border: 1.5px solid var(--border);
-    font-size: 1rem;
-    background: #fafbfc;
-    color: var(--text);
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-  .linebtns { display: flex; gap: 8px; }
-  .linebtns button {
-    flex: 1;
-    padding: 10px 6px;
-    border-radius: 10px;
-    border: 1.5px solid var(--border);
-    background: #fafbfc;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--text);
-  }
-  .linebtns button.active { background: var(--blue); color: white; border-color: var(--blue); }
-  .dirbtns { display: flex; gap: 8px; }
-  .dirbtns button {
-    flex: 1;
-    padding: 10px 6px;
-    border-radius: 10px;
-    border: 1.5px solid var(--border);
-    background: #fafbfc;
-    font-weight: 600;
-    font-size: 0.82rem;
-    color: var(--text);
-  }
-  .dirbtns button.active { background: var(--blue-dark); color: white; border-color: var(--blue-dark); }
-  .searchbtn {
-    margin-top: 16px;
-    width: 100%;
-    padding: 14px 10px;
+    padding: 13px 40px 13px 14px;
     border-radius: 12px;
     border: none;
-    background: var(--blue);
-    color: white;
-    font-weight: 700;
     font-size: 1rem;
-    box-shadow: 0 2px 6px rgba(11,95,255,0.35);
+    font-family: inherit;
+    background-color: var(--fill);
+    color: var(--ink);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
   }
-  .searchbtn:active { background: var(--blue-dark); }
+  select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .linebtns, .dirbtns {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--fill);
+    border-radius: 12px;
+  }
+  .linebtns button, .dirbtns button {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: background .15s, color .15s;
+  }
+  .linebtns button.active, .dirbtns button.active {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .searchbtn {
+    margin-top: 24px;
+    width: 100%;
+    padding: 15px 10px;
+    border-radius: 14px;
+    border: none;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: transform .1s, opacity .1s;
+  }
+  .searchbtn:active { transform: scale(0.98); opacity: 0.85; }
   .geobtn {
-    margin-top: 10px;
+    margin-top: 8px;
     width: 100%;
     padding: 12px 10px;
-    border-radius: 10px;
-    border: 1.5px solid var(--blue);
-    background: #eef2ff;
-    color: var(--blue-dark);
-    font-weight: 700;
+    border-radius: 14px;
+    border: none;
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-weight: 600;
     font-size: 0.9rem;
   }
-  .results-title { font-size: 0.95rem; font-weight: 700; margin: 4px 0 10px; color: var(--text); }
-  .results-title span { font-weight: 400; color: var(--muted); font-size: 0.82rem; }
+  .results-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 12px; }
+  .results-title span { display: block; margin-top: 2px; font-weight: 400; color: var(--muted); font-size: 0.82rem; letter-spacing: 0; }
   table.times { width: 100%; border-collapse: collapse; }
-  table.times td { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+  table.times td { padding: 14px 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
   table.times tr:last-child td { border-bottom: none; }
-  .time { font-weight: 700; font-size: 1.05rem; width: 70px; }
+  .time {
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    width: 92px;
+  }
   .badge {
     display: inline-block;
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 6px;
-    background: #eef2ff;
-    color: var(--blue-dark);
+    font-size: 0.66rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--fill);
+    color: var(--muted);
     margin-right: 4px;
   }
-  .badge.note { background: #fff7ed; color: #c2410c; }
-  .vettore { font-size: 0.72rem; color: var(--muted); }
-  .next-row { background: #ecfdf3; }
-  .next-row .time { color: var(--green); }
+  .badge.note { background: var(--warn-soft); color: var(--warn); }
+  .vettore { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .next-row td { background: var(--accent-soft); border-bottom-color: transparent; }
+  .next-row td:first-child { border-radius: 12px 0 0 12px; padding-left: 12px; }
+  .next-row td:last-child { border-radius: 0 12px 12px 0; }
+  .next-row .time { color: var(--accent); }
   .next-label {
-    display: inline-block;
-    background: var(--green);
-    color: white;
-    font-size: 0.62rem;
+    display: block;
+    color: var(--accent);
+    font-size: 0.6rem;
     font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 6px;
-    margin-left: 6px;
-    vertical-align: middle;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
   }
   .empty, .placeholder {
     color: var(--muted);
     font-size: 0.9rem;
-    padding: 20px 4px;
+    padding: 28px 8px;
     text-align: center;
+    line-height: 1.5;
   }
-  .legend { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
-  .legend b { color: var(--text); }
+  .placeholder b { color: var(--ink); font-weight: 600; }
+  .legend { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+  .legend b { color: var(--ink); }
   details summary {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: var(--blue-dark);
+    color: var(--muted);
     cursor: pointer;
-    padding: 4px 0;
+    list-style: none;
   }
-  footer { text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 10px; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: " +"; }
+  details[open] summary::after { content: " −"; }
+  footer { text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 18px; padding: 0 16px; }
   .pending-note {
-    font-size: 0.75rem;
-    color: #c2410c;
-    background: #fff7ed;
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--warn);
+    background: var(--warn-soft);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-top: 12px;
     display: none;
   }
 </style>
@@ -182,7 +210,7 @@
 <body>
 
 <header>
-  <h1>🚌 Orari Bus</h1>
+  <h1>Orari Bus</h1>
   <p id="clock"></p>
 </header>
 
@@ -200,21 +228,21 @@
 
     <label>Tipo di giorno</label>
     <select id="dayTypeSelect">
-      <option value="fsc_feriale">Feriale (lun–ven), periodo scolastico</option>
-      <option value="fns_feriale">Feriale (lun–ven), vacanze scolastiche</option>
+      <option value="fsc_feriale">Periodo scolastico (lun–ven)</option>
+      <option value="fns_feriale">Vacanze scolastiche (lun–ven)</option>
     </select>
 
-    <button class="searchbtn" id="searchBtn" type="button">🔍 Mostra orari</button>
-    <div class="pending-note" id="pendingNote">⚠️ Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
+    <button class="searchbtn" id="searchBtn" type="button">Mostra orari</button>
+    <div class="pending-note" id="pendingNote">Hai cambiato la selezione: premi "Mostra orari" per aggiornare.</div>
 
-    <button class="geobtn" id="geoBtn" type="button">📍 Trova fermata più vicina</button>
-    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:6px;"></div>
+    <button class="geobtn" id="geoBtn" type="button">Trova la fermata più vicina</button>
+    <div id="geoStatus" style="font-size:0.78rem;color:var(--muted);margin-top:4px;text-align:center;"></div>
   </div>
 
   <div class="card" id="resultsCard">
     <div class="results-title" id="resultsTitle"></div>
     <div class="placeholder" id="placeholderMsg">
-      👆 Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
+      Seleziona linea, direzione, fermata e tipo di giorno, poi premi <b>"Mostra orari"</b>.
     </div>
     <table class="times" id="resultsTable"></table>
     <div class="empty" id="emptyMsg" style="display:none;">Nessuna corsa trovata per questa combinazione.</div>
@@ -393,7 +421,7 @@ function doSearch(scrollToNext){
   clearPending();
   document.getElementById("placeholderMsg").style.display = "none";
   document.getElementById("resultsTitle").innerHTML =
-    "📍 " + stopName + "<br><span>" + DATA.linee[state.linea].nome + " · " + dir.titolo + "</span>";
+    stopName + "<br><span>" + DATA.linee[state.linea].nome + " · " + dir.titolo + "</span>";
 
   let rows = dir.corse
     .filter(c => validCadenze.includes(c.cadenza))
@@ -482,7 +510,7 @@ document.getElementById("geoBtn").addEventListener("click", () => {
     statusEl.textContent = "Dati non ancora caricati, riprova tra un istante.";
     return;
   }
-  statusEl.textContent = "📡 Ricerca posizione in corso...";
+  statusEl.textContent = "Ricerca posizione in corso...";
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -499,14 +527,14 @@ document.getElementById("geoBtn").addEventListener("click", () => {
       const distText = best.dist < 1
         ? Math.round(best.dist * 1000) + " m"
         : best.dist.toFixed(1) + " km";
-      statusEl.textContent = "✅ Fermata più vicina: " + best.stopName + " (~" + distText + "). Premi \"Mostra orari\" per vedere le corse.";
+      statusEl.textContent = "Fermata più vicina: " + best.stopName + " (~" + distText + "). Premi \"Mostra orari\" per vedere le corse.";
     },
     (err) => {
       let msg = "Impossibile ottenere la posizione.";
       if (err.code === 1) msg = "Permesso posizione negato. Abilitalo nelle impostazioni del browser.";
       else if (err.code === 2) msg = "Posizione non disponibile.";
       else if (err.code === 3) msg = "Richiesta posizione scaduta, riprova.";
-      statusEl.textContent = "⚠️ " + msg;
+      statusEl.textContent = msg;
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
   );
