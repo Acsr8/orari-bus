@@ -743,8 +743,7 @@ attachAutoNow("statFine");
 function formatDT(value){
   if (!value) return "";
   const [datePart, timePart] = value.split("T");
-  const [y,m,d] = datePart.split("-");
-  return d + "/" + m + "/" + y + " " + timePart;
+  return datePart + " " + timePart;
 }
 
 document.getElementById("statSaveBtn").addEventListener("click", async () => {
@@ -771,7 +770,7 @@ document.getElementById("statSaveBtn").addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
-        linea: lineLabel(statState.linea) + " - " + linea.nome,
+        linea: lineLabel(statState.linea),
         direzione: dir.titolo,
         partenza: partenza,
         arrivo: arrivo,
