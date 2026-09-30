@@ -1,4 +1,4 @@
-const CACHE_NAME = "orari-bus-v6";
+const CACHE_NAME = "orari-bus-v7";
 const FILES_TO_CACHE = [
   "./index.html",
   "./data.json",
@@ -27,6 +27,11 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  // Non mettere in cache le chiamate verso Google Apps Script (dati dinamici in scrittura)
+  if (url.hostname.includes("script.google.com")) {
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const network = fetch(event.request)
