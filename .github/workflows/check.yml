@@ -1,0 +1,23 @@
+name: Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON files
+        run: |
+          for f in data.json coords.json manifest.json; do
+            python3 -m json.tool "$f" > /dev/null && echo "OK $f"
+          done
+
+      - name: Check files cached by the service worker exist
+        run: |
+          grep -oE '"\./[^"]+"' sw.js | tr -d '"' | while read -r f; do
+            test -f "$f" && echo "OK $f" || { echo "MISSING $f"; exit 1; }
+          done
