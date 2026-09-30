@@ -1,7 +1,7 @@
 {
   "name": "Orari Bus",
   "short_name": "Orari Bus",
-  "description": "Consultazione orari linee bus E037, E060 e 101, con statistiche di percorrenza",
+  "description": "Consultazione orari linee bus E037, E060 e 101",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
